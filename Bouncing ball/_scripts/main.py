@@ -102,9 +102,13 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_f:
+                    switch_players(TEAM_0)
+                if event.key == pygame.K_h:
+                    switch_players(TEAM_1)
                 
-        if pygame.key.get_pressed():
-            update_players()
+        update_players()
         # if ball.is_into_hold == True:
         #     print('Lose')
         

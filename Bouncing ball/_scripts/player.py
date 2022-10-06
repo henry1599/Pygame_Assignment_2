@@ -28,6 +28,8 @@ class Player(SpriteRenderer):
         pos_x = self.position[0] + direction[0] * self.speed
         pos_y = self.position[1] + direction[1] * self.speed
         self.position =  (pos_x, pos_y)
+        self.rect.x = pos_x 
+        self.rect.y = pos_y
 
     def draw(self):
         super().draw()

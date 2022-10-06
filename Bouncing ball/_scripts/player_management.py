@@ -7,8 +7,8 @@ TEAM_1 = 1
 PLAYER_0 = 0
 PLAYER_1 = 1
 
-KEYBOARD_0 = {"left": pygame.K_a, "right": pygame.K_d, "up": pygame.K_w, "down": pygame.K_s}
-KEYBOARD_1 = {"left": pygame.K_j, "right": pygame.K_l, "up": pygame.K_i, "down": pygame.K_k}
+KEYBOARD_0 = {"left": pygame.K_a, "right": pygame.K_d, "up": pygame.K_w, "down": pygame.K_s, "switch": pygame.K_f}
+KEYBOARD_1 = {"left": pygame.K_j, "right": pygame.K_l, "up": pygame.K_i, "down": pygame.K_k, "switch": pygame.K_h}
 
 players = [[],[]]
 focus_player = [0, 0]
@@ -30,18 +30,20 @@ def init_players(screen):
 
 def update_players():
     keys = pygame.key.get_pressed()
+    if not keys:
+        return
     global current_player
     if keys[KEYBOARD_0["left"]] or keys[KEYBOARD_0["right"]] or keys[KEYBOARD_0["up"]] or keys[KEYBOARD_0["down"]]:
         moverment(players[TEAM_0][focus_player[TEAM_0]], KEYBOARD_0)
-        # print(players[TEAM_0][PLAYER_0].position, players[TEAM_0][PLAYER_1].position, players[TEAM_1][PLAYER_0].position, players[TEAM_1][PLAYER_1].position)
+
     if keys[KEYBOARD_1["left"]] or keys[KEYBOARD_1["right"]] or keys[KEYBOARD_1["up"]] or keys[KEYBOARD_1["down"]]:
         moverment(players[TEAM_1][focus_player[TEAM_1]], KEYBOARD_1)
-        # print(players[TEAM_0][PLAYER_0].position, players[TEAM_0][PLAYER_1].position, players[TEAM_1][PLAYER_0].position, players[TEAM_1][PLAYER_1].position)
+
+    
     
 def draw_players():
     for team in players:
         for player in team:
-            print(players[TEAM_0][PLAYER_0].position, players[TEAM_0][PLAYER_1].position, players[TEAM_1][PLAYER_0].position, players[TEAM_1][PLAYER_1].position)
             player.draw()
         
 
@@ -57,3 +59,9 @@ def moverment(player, keyboard):
     elif keys[keyboard["down"]]:
         dir_y += 1
     player.moverment((dir_x, dir_y))
+
+def switch_players(team):
+    focus_player[team] = int(not(focus_player[team]))
+
+def get_all_players():
+    return players
