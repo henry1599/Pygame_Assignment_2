@@ -94,9 +94,12 @@ bounceable_objects_group = pygame.sprite.Group()
 
 def main():
     running = True
+    global players
     # * REMEMBER TO ASSIGN THIS LINE
-    ball01.bounceable_group = bounceable_objects_group
     init_players(screen)
+    for player in players:
+        bounceable_objects_group.add(player)
+    ball01.bounceable_group = bounceable_objects_group
     while running:
         clock.tick(FPS)
         for event in pygame.event.get():
