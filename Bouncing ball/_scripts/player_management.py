@@ -80,7 +80,7 @@ def updateBot(ball):
     
     delta_x = ball.rect.x - player.position[0]
     delta_y = ball.rect.y - player.position[1]
-    dir = (0,0)
+    dir = [0,0]
     if abs(delta_y) >= abs(delta_x):
         if delta_y > 0: dir[1] = 1
         else: dir[1] = -1
