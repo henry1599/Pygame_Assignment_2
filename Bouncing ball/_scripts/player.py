@@ -20,6 +20,11 @@ class Player(SpriteRenderer):
         super().__init__(screen, image_path, position, scale, scale_multiplier, anchor, angle_delta_min, angle_delta_max)
         self.speed = speed
 
+    def reset(self, position):
+        self.rect.x = position[0]
+        self.rect.y = position[1]
+        self.position = position
+
     def moverment(self, direction):
         ## normalize direction vector
         cost = list(map(lambda x: x**2, direction))
