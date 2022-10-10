@@ -47,11 +47,17 @@ def update_players(ball, multiplayer):
     else:
         updateBot(ball)
 
+    if keys[KEYBOARD_1["left"]] or keys[KEYBOARD_1["right"]] or keys[KEYBOARD_1["up"]] or keys[KEYBOARD_1["down"]]:
+        moverment(players[TEAM_1][focus_player[TEAM_1]], KEYBOARD_1)
+
+    
+    
 def draw_players():
     for team in players:
         for player in team:
             player.draw()
         
+
 def moverment(player, keyboard):
     keys = pygame.key.get_pressed()
     dir_x, dir_y = 0, 0

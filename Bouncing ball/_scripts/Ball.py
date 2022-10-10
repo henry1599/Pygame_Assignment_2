@@ -27,6 +27,19 @@ class Ball(SpriteRenderer):
         self.is_into_hold = False
         self.bounceable_group = bounceable_group
 
+    def reset(self, position, init_speed):
+        self.rect.y = position[1]
+        self.rect.x = position[0]
+        self.position = position
+        self.x_speed = init_speed[0]
+        self.y_speed = init_speed[1]
+        self.x_dir = Direction.LEFT
+        self.y_dir = Direction.UP
+        if self.x_speed > 0:
+            self.x_dir = Direction.RIGHT
+        if self.y_speed > 0:
+            self.y_dir = Direction.DOWN
+        
     def update(self):
         self.rect.y += self.y_speed
         self.rect.x += self.x_speed
