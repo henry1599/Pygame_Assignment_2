@@ -75,26 +75,28 @@ time_focus_bot = 0
 dir = [0, 0]
 
 def updateBot(ball):
+    dir = [0,0]
+    # global time_focus_bot
     # each 2s, update new bot's player to focus 
-    if time_focus_bot == 0:
-        if get_distance_to_ball(ball, players[TEAM_1][0]) >= get_distance_to_ball(ball, players[TEAM_1][1]):
-            focus_player[TEAM_1] = 0
-        else:
-            focus_player[TEAM_1] = 1
-        time_focus_bot = FPS * 2
-    time_focus_bot -= 1
+    # if time_focus_bot == 0:
+    if get_distance_to_ball(ball, players[TEAM_1][0]) >= get_distance_to_ball(ball, players[TEAM_1][1]):
+        focus_player[TEAM_1] = 0
+    else:
+        focus_player[TEAM_1] = 1
+    #         time_focus_bot = FPS * 2
+    # time_focus_bot -= 1
     player = players[TEAM_1][focus_player[TEAM_1]]
     
     # each 0.5s, update new velocity of bot's player
-    if time_focus_bot % (FPS / 2) == 0:
-        delta_x = ball.rect.x - player.position[0]
-        delta_y = ball.rect.y - player.position[1]
-        if abs(delta_y) >= abs(delta_x):
-            if delta_y > 0: dir[1] = 1
-            else: dir[1] = -1
-        else:
-            if delta_x > 0: dir[0] = 1
-            else: dir[0] = -1
+    # if time_focus_bot % (FPS / 2) == 0:
+    delta_x = ball.rect.x - player.position[0]
+    delta_y = ball.rect.y - player.position[1]
+    if abs(delta_y) >= abs(delta_x):
+        if delta_y > 0: dir[1] = 1
+        else: dir[1] = -1
+    else:
+        if delta_x > 0: dir[0] = 1
+        else: dir[0] = -1
 
     player.moverment(dir)
 

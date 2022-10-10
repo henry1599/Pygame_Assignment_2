@@ -22,50 +22,6 @@ ground_position = (0, 0)
 # * END PRESET
 
 
-# * DEMO OBJECTS - CAN REMOVE
-# test_obj01 = SpriteRenderer(
-#     screen = screen,
-#     image_path = PLAYER_TEST_PATH,
-#     position = (WIDTH / 3, HEIGHT / 3),
-#     scale = PLAYER_TEST_SIZE,
-#     scale_multiplier = 0.3,
-#     anchor = Anchor.MID_CENTER,
-#     angle_delta_min = 1,
-#     angle_delta_max = 4
-# )
-# test_obj02 = SpriteRenderer(
-#     screen = screen,
-#     image_path = PLAYER_TEST_PATH,
-#     position = (WIDTH * 2 / 3, HEIGHT * 2.6 / 3),
-#     scale = PLAYER_TEST_SIZE,
-#     scale_multiplier = 0.35,
-#     anchor = Anchor.MID_CENTER,
-#     angle_delta_min = 1,
-#     angle_delta_max = 4
-# )
-# test_obj03 = SpriteRenderer(
-#     screen = screen,
-#     image_path = PLAYER_TEST_PATH,
-#     position = (WIDTH * 3 / 4, HEIGHT / 3),
-#     scale = PLAYER_TEST_SIZE,
-#     scale_multiplier = 0.3,
-#     anchor = Anchor.MID_CENTER,
-#     angle_delta_min = 1,
-#     angle_delta_max = 4
-# )
-# test_obj04 = SpriteRenderer(
-#     screen = screen,
-#     image_path = PLAYER_TEST_PATH,
-#     position = (WIDTH * 1.5 / 3, HEIGHT * 2 / 3),
-#     scale = PLAYER_TEST_SIZE,
-#     scale_multiplier = 0.35,
-#     anchor = Anchor.MID_CENTER,
-#     angle_delta_min = 1,
-#     angle_delta_max = 4
-# )
-# * END DEMO OBJECTS - CAN REMOVE
-
-
 # * BALL DEMO
 # * DO NOT ADD THIS INTO SPRITE GROUP
 # * AS IT HAS ITS OWN UPDATE METHOD
@@ -95,7 +51,6 @@ bounceable_objects_group = pygame.sprite.Group()
 def main(multiplayer):
     running = True
     global players
-    # * REMEMBER TO ASSIGN THIS LINE
     init_players(screen)
     for player in players:
         bounceable_objects_group.add(player)
