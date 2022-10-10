@@ -36,23 +36,35 @@ class Player(SpriteRenderer):
         new_min_y = self.rect.top + direction[1] * self.speed
         new_max_y = self.rect.bottom + direction[1] * self.speed
 
-        ### player[0][0]
-        if min_x < WIDTH / 2 and min_y < HEIGHT / 2:
-            if new_min_x <= 0 or new_max_x >= WIDTH / 2: direction[0] = 0
-            if new_min_y <= 0 or new_max_y >= HEIGHT / 2: direction[1] = 0
-        ### player[0][1]
-        if min_x < WIDTH / 2 and min_y > HEIGHT / 2:
-            if new_min_x <= 0 or new_max_x >= WIDTH / 2: direction[0] = 0
-            if new_min_y <= HEIGHT / 2 or new_max_y >= HEIGHT: direction[1] = 0
-        ### player[1][0]
-        if min_x > WIDTH / 2 and min_y < HEIGHT / 2:
-            if new_min_x <= WIDTH / 2 or new_max_x >= WIDTH: direction[0] = 0
-            if new_min_y <= 0 or new_max_y >= HEIGHT / 2: direction[1] = 0
-        ### player[1][1]
-        if min_x > WIDTH / 2 and min_y > HEIGHT / 2:
-            if new_min_x <= WIDTH / 2 or new_max_x >= WIDTH: direction[0] = 0
-            if new_min_y <= HEIGHT / 2 or new_max_y >= HEIGHT: direction[1] = 0
-            
+        # ### player[0][0]
+        # if min_x < WIDTH / 2 and min_y < HEIGHT / 2:
+        #     if new_min_x <= 0 or new_max_x >= WIDTH / 2: direction[0] = 0
+        #     if new_min_y <= 0 or new_max_y >= HEIGHT / 2: direction[1] = 0
+        # ### player[0][1]
+        # if min_x < WIDTH / 2 and min_y > HEIGHT / 2:
+        #     if new_min_x <= 0 or new_max_x >= WIDTH / 2: direction[0] = 0
+        #     if new_min_y <= HEIGHT / 2 or new_max_y >= HEIGHT: direction[1] = 0
+        # ### player[1][0]
+        # if min_x > WIDTH / 2 and min_y < HEIGHT / 2:
+        #     if new_min_x <= WIDTH / 2 or new_max_x >= WIDTH: direction[0] = 0
+        #     if new_min_y <= 0 or new_max_y >= HEIGHT / 2: direction[1] = 0
+        # ### player[1][1]
+        # if min_x > WIDTH / 2 and min_y > HEIGHT / 2:
+        #     if new_min_x <= WIDTH / 2 or new_max_x >= WIDTH: direction[0] = 0
+        #     if new_min_y <= HEIGHT / 2 or new_max_y >= HEIGHT: direction[1] = 0
+        
+        if min_x > WIDTH / 2:
+            if new_min_x <= WIDTH / 2 or new_max_x >= WIDTH:
+                direction[0] = 0
+        else:
+            if new_min_x <= 0 or new_max_x >= WIDTH / 2:
+                direction[0] = 0
+        if min_y > HEIGHT / 2:
+            if new_min_y <= HEIGHT / 2 or new_max_y >= HEIGHT:
+                direction[1] = 0
+        else:
+            if new_min_y <= 0 or new_max_y >= HEIGHT / 2:
+                direction[1] = 0
 
         ## update position
         pos_x = self.position[0] + direction[0] * self.speed
