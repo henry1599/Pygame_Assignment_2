@@ -21,8 +21,8 @@ class Player(SpriteRenderer):
         self.speed = speed
 
     def reset(self, position):
-        self.rect.x = position[0]
-        self.rect.y = position[1]
+        self.rect = self.image.get_rect(center = position)
+        # self.rect.y = position[1]
         self.position = position
 
     def moverment(self, direction):
@@ -59,15 +59,8 @@ class Player(SpriteRenderer):
         pos_x = self.position[0] + direction[0] * self.speed
         pos_y = self.position[1] + direction[1] * self.speed
         
-        
-        
         self.position = (pos_x, pos_y)
-        ## update position
-        pos_x = self.position[0] + direction[0] * self.speed
-        pos_y = self.position[1] + direction[1] * self.speed
-        self.position =  (pos_x, pos_y)
-        self.rect.x = pos_x 
-        self.rect.y = pos_y
+        self.rect = self.image.get_rect(center = self.position)
 
     def draw(self):
         super().draw()
