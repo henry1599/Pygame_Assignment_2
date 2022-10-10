@@ -25,7 +25,7 @@ def init_players(screen):
             screen = screen,
             image_path = PLAYER_TEST_PATH,
             position = player_pos[i][j],
-            speed = 3.0,
+            speed = PLAYER_SPEED,
             scale = PLAYER_TEST_SIZE,
             scale_multiplier = 0.3,
             anchor = Anchor.MID_CENTER,

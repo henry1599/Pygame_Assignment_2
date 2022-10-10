@@ -25,7 +25,7 @@ ground_position = (0, 0)
 # * BALL DEMO
 # * DO NOT ADD THIS INTO SPRITE GROUP
 # * AS IT HAS ITS OWN UPDATE METHOD
-random_speed = [-10, 10]
+random_speed = [-BALL_SPEED, BALL_SPEED]
 # all_sprites = pygame.sprite.Group()
 ball01 = Ball(
     screen = screen,
@@ -124,7 +124,7 @@ def main(multiplayer):
             if(need_to_reset):
                 reset_position()
             need_to_reset = False 
-            update_players()
+            update_players(ball01, multiplayer)
             ball01.update()
         else:
             need_to_reset = True

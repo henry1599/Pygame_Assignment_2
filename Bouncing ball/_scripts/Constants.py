@@ -1,6 +1,9 @@
 import pygame, random, os, time
 from enum import Enum
 
+PLAYER_SPEED = 3.0
+BALL_SPEED = 3.0
+
 COLLIDE_INFO = {
     'BL' : ['botton', 'left'],
     'BLR' : ['bottom', 'left', 'right'],
