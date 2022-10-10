@@ -22,7 +22,6 @@ class Player(SpriteRenderer):
 
     def reset(self, position):
         self.rect = self.image.get_rect(center = position)
-        # self.rect.y = position[1]
         self.position = position
 
     def moverment(self, direction):
