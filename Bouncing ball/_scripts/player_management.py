@@ -23,7 +23,7 @@ def init_players(screen):
         for j in range(2):
             player = Player(
             screen = screen,
-            image_path = PLAYER_TEST_PATH,
+            image_path = PLAYER_SPRITES[i * 2 + j],
             position = player_pos[i][j],
             speed = PLAYER_SPEED,
             scale = PLAYER_TEST_SIZE,

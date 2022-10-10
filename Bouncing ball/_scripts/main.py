@@ -32,7 +32,7 @@ ball01 = Ball(
     image_path = BALL_PATH,
     position = (WIDTH / 2, HEIGHT / 2),
     scale = BALL_SIZE_IN_PIXEL,
-    scale_multiplier = 0.1,
+    scale_multiplier = 0.3,
     anchor = Anchor.MID_CENTER,
     angle_delta_min = 1,
     angle_delta_max = 4,
@@ -44,7 +44,7 @@ ball_group = pygame.sprite.Group()
 ball_group.add(ball01)
 goal_left = Goal(
     screen = screen,
-    image_path = PLAYER_TEST_PATH,
+    image_path = GOAL_PATH,
     position = (-10, HEIGHT / 2),
     scale = (80, HEIGHT/3),
     scale_multiplier = 1,
@@ -55,7 +55,7 @@ goal_left = Goal(
 )
 goal_right = Goal(
     screen = screen,
-    image_path = PLAYER_TEST_PATH,
+    image_path = GOAL_PATH,
     position = (WIDTH + 10, HEIGHT / 2),
     scale = (80, HEIGHT/3),
     scale_multiplier = 1,

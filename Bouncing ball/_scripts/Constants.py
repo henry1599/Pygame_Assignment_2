@@ -25,14 +25,27 @@ HEIGHT = 720
 FPS = 60
 random_color = (random.randrange(0,255),random.randrange(0,255),random.randrange(0,255))
 
-BALL_PATH = '../_assets/sprites/balls/ball.png'
-BALL_SIZE_IN_PIXEL = (500, 500)
+BALL_PATH = '../_assets/Casino/Casino_Coin.png'
+BALL_SIZE_IN_PIXEL = (182, 182)
 
-BACKGROUND_PATH = '../_assets/sprites/backgrounds/Background.png'
-BACKGROUND_WIDTH = 1300
-BACKGROUND_HEIGHT = 866
+BACKGROUND_PATH = '../_assets/Casino/Casino_Table.png'
+BACKGROUND_WIDTH = 1676
+BACKGROUND_HEIGHT = 1119
 
-PLAYER_TEST_PATH = '../_assets/sprites/players/Test/player_test.png'
+PLAYER_RED_01 = '../_assets/Casino/Player_Red_01.png'
+PLAYER_RED_02 = '../_assets/Casino/Player_Red_02.png'
+PLAYER_BLACK_01 = '../_assets/Casino/Player_Black_01.png'
+PLAYER_BLACK_02 = '../_assets/Casino/Player_Black_02.png'
+
+PLAYER_SPRITES = [
+    PLAYER_RED_01,
+    PLAYER_RED_02,
+    PLAYER_BLACK_01,
+    PLAYER_BLACK_02
+]
+
+GOAL_PATH = '../_assets/sprites/players/Test/player_test.png'
+
 PLAYER_TEST_SIZE = (270, 270)
 
 class Direction(Enum):
