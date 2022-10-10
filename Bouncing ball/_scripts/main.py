@@ -87,7 +87,11 @@ def reset_position():
         (WIDTH / 2, HEIGHT / 2),
         (random_speed[random.randint(0, len(random_speed) - 1)], random_speed[random.randint(0, len(random_speed) - 1)])
     )
-def main(multiplayer):
+
+sep_line = pg.image.load(SEPARATED_LINE).convert_alpha()    
+sep_line_rect = sep_line.get_rect(center = (WIDTH / 2, HEIGHT / 2))
+
+def main():
     running = True
     need_to_reset = False
     global players
@@ -109,6 +113,8 @@ def main(multiplayer):
                     switch_players(TEAM_1)
 
         screen.blit(ground_surface, ground_position)
+        if not main_menu.is_show:
+            screen.blit(sep_line, sep_line_rect)
         
         if(main_menu.is_show):
             main_menu.update()
@@ -124,7 +130,7 @@ def main(multiplayer):
             if(need_to_reset):
                 reset_position()
             need_to_reset = False 
-            update_players(ball01, multiplayer)
+            update_players(ball01, main_menu.is_multi)
             ball01.update()
         else:
             need_to_reset = True
@@ -151,4 +157,4 @@ def main(multiplayer):
 
     pygame.quit()
 if __name__ == "__main__":
-    main(False)
+    main()

@@ -40,6 +40,8 @@ def update_players(ball, multiplayer):
     global current_player
     if keys[KEYBOARD_0["left"]] or keys[KEYBOARD_0["right"]] or keys[KEYBOARD_0["up"]] or keys[KEYBOARD_0["down"]]:
         moverment(players[TEAM_0][focus_player[TEAM_0]], KEYBOARD_0)
+    if keys[KEYBOARD_1["left"]] or keys[KEYBOARD_1["right"]] or keys[KEYBOARD_1["up"]] or keys[KEYBOARD_1["down"]]:
+        moverment(players[TEAM_1][focus_player[TEAM_1]], KEYBOARD_1)
 
     if multiplayer:
         if keys[KEYBOARD_1["left"]] or keys[KEYBOARD_1["right"]] or keys[KEYBOARD_1["up"]] or keys[KEYBOARD_1["down"]]:
@@ -47,8 +49,6 @@ def update_players(ball, multiplayer):
     else:
         updateBot(ball)
 
-    if keys[KEYBOARD_1["left"]] or keys[KEYBOARD_1["right"]] or keys[KEYBOARD_1["up"]] or keys[KEYBOARD_1["down"]]:
-        moverment(players[TEAM_1][focus_player[TEAM_1]], KEYBOARD_1)
 
     
     

@@ -28,6 +28,8 @@ random_color = (random.randrange(0,255),random.randrange(0,255),random.randrange
 BALL_PATH = '../_assets/Casino/Casino_Coin.png'
 BALL_SIZE_IN_PIXEL = (182, 182)
 
+SEPARATED_LINE = '../_assets/Casino/Separated_Line.png'
+
 BACKGROUND_PATH = '../_assets/Casino/Casino_Table.png'
 BACKGROUND_WIDTH = 1676
 BACKGROUND_HEIGHT = 1119
@@ -76,7 +78,8 @@ GAME_NAME_TEXT_SIZE = 100
 GAME_NAME_COLOR = (255, 255, 255)
 GAME_NAME_COLOR_OUTLINE = (0, 0, 0)
 
-START_TITLE = "Let's Go"
+SINGLE_TITLE = "PvE"
+MULTIPLE_TITLE = "PvP"
 TITLE_TEXT_SIZE = 50
 TITLE_COLOR = (255, 255, 255)
 
