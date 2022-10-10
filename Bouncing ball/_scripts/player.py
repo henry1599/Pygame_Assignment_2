@@ -30,15 +30,31 @@ class Player(SpriteRenderer):
         cost = list(map(lambda x: x**2, direction))
         direction = direction / np.sqrt(np.sum(cost)) 
         ## check if can not move
+        min_x = self.rect.left
+        min_y = self.rect.top
         new_min_x = self.rect.left + direction[0] * self.speed
         new_max_x = self.rect.right + direction[0] * self.speed
         new_min_y = self.rect.top + direction[1] * self.speed
         new_max_y = self.rect.bottom + direction[1] * self.speed
 
-        if (new_min_x == 0) or (new_min_x == WIDTH / 2) or (new_max_x == WIDTH / 2) or (new_max_x == WIDTH):
-            direction[0] = 0
-        if (new_min_y == 0) or (new_min_y == HEIGHT / 2) or (new_max_y == HEIGHT / 2) or (new_max_y == HEIGHT):
-            direction[1] = 0
+        ### player[0][0]
+        if min_x < WIDTH / 2 and min_y < HEIGHT / 2:
+            if new_min_x == 0 or new_max_x == WIDTH / 2: direction[0] = 0
+            if new_min_y == 0 or new_max_y == HEIGHT / 2: direction[1] = 0
+        ### player[0][1]
+        if min_x < WIDTH / 2 and min_y > HEIGHT / 2:
+            if new_min_x == 0 or new_max_x == WIDTH / 2: direction[0] = 0
+            if new_min_y == HEIGHT / 2 or new_max_y == HEIGHT: direction[1] = 0
+        ### player[1][0]
+        if min_x > WIDTH / 2 and min_y < HEIGHT / 2:
+            if new_min_x == WIDTH / 2 or new_max_x == WIDTH: direction[0] = 0
+            if new_min_y == 0 or new_max_y == HEIGHT / 2: direction[1] = 0
+        ### player[1][1]
+        if min_x > WIDTH / 2 and min_y > HEIGHT / 2:
+            if new_min_x == WIDTH / 2 or new_max_x == WIDTH: direction[0] = 0
+            if new_min_y == HEIGHT / 2 or new_max_y == HEIGHT: direction[1] = 0
+            
+
         ## update position
         pos_x = self.position[0] + direction[0] * self.speed
         pos_y = self.position[1] + direction[1] * self.speed
