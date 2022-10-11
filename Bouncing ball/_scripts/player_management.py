@@ -79,16 +79,18 @@ def get_all_players():
 def updateBot(ball):
     dir = [0,0]
     
-    new_x = ball.rect.x + ball.x_speed * 30
-    new_y = ball.rect.y + ball.y_speed * 30
+    diff = DIFFICULTY["EASY"]
+    
+    new_x = ball.rect.x + ball.x_speed * diff
+    new_y = ball.rect.y + ball.y_speed * diff
 
     player1_to_ball = get_distance_to_ball([new_x, new_y], players[TEAM_1][0])
     player2_to_ball = get_distance_to_ball([new_x, new_y], players[TEAM_1][1])
 
     # if the ball is too far from players, not move
-    if player1_to_ball > abs(WIDTH / 2) and player2_to_ball > abs(WIDTH / 2): return
+    # if player1_to_ball > abs(WIDTH / 2) and player2_to_ball > abs(WIDTH / 2): return
 
-    if player1_to_ball >= player2_to_ball:
+    if player1_to_ball <= player2_to_ball:
         player = players[TEAM_1][0]
     else:
         player = players[TEAM_1][1]
@@ -96,10 +98,10 @@ def updateBot(ball):
     delta_x = new_x - player.position[0]
     delta_y = new_y - player.position[1]
     if abs(delta_y) >= abs(delta_x):
-        if delta_y > 0: dir[1] = 1
+        if delta_y >= 0: dir[1] = 1
         else: dir[1] = -1
     else:
-        if delta_x > 0: dir[0] = 1
+        if delta_x >= 0: dir[0] = 1
         else: dir[0] = -1
 
     player.moverment(dir)

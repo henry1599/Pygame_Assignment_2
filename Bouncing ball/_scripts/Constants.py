@@ -95,3 +95,10 @@ TITLE_COLOR = (255, 255, 255)
 FADE_IMAGE_PATH = '../_assets/sprites/fade/Fade.png'
 
 TIME_PER_MATCH = 60
+
+DIFFICULTY = {
+    "EASY" : 1,
+    "MEDIUM" : 10,
+    "HARD" : 30,
+    "PROFESSIONAL" : 60
+}
