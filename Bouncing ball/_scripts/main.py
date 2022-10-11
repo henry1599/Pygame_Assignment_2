@@ -91,6 +91,9 @@ def reset_position():
 sep_line = pg.image.load(SEPARATED_LINE).convert_alpha()    
 sep_line_rect = sep_line.get_rect(center = (WIDTH / 2, HEIGHT / 2))
 
+win_sfx = pygame.mixer.Sound(COIN_WIN_SFX)
+win_sfx.set_volume(COIN_WIN_VOLUME)
+
 def main():
     running = True
     need_to_reset = False
@@ -101,6 +104,11 @@ def main():
         bounceable_objects_group.add(player)
     ball01.bounceable_group = bounceable_objects_group
     reset_position()
+    
+    pg.mixer.music.load(THEME)
+    pg.mixer.music.set_volume(THEME_VOLUME)
+    pg.mixer.music.play(-1)
+    
     while running:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -133,11 +141,8 @@ def main():
             update_players(ball01, main_menu.is_multi)
             ball01.update()
         else:
+            pg.mixer.Sound.play(win_sfx)
             need_to_reset = True
-        # test_obj01.update()
-        # test_obj02.update()
-        # test_obj03.update()
-        # test_obj04.update()
 
         ball01.draw()
 
@@ -146,13 +151,7 @@ def main():
 
         draw_players()
         
-        ingame_ui.draw()
-        # test_obj01.draw()
-        # test_obj02.draw()
-        # test_obj03.draw()
-        # test_obj04.draw()
-        # if ball.is_into_hold == True:
-        #     running = False
+        ingame_ui.draw(not main_menu.is_multi)
         pygame.display.flip()
 
     pygame.quit()

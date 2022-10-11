@@ -3,6 +3,12 @@ from pygame.locals import *
 from Constants import *
 from components import *
 
+
+
+pygame.mixer.init()
+coin_collision_sfx = pygame.mixer.Sound(COIN_COLLISION_SFX)
+coin_collision_sfx.set_volume(COIN_COLLISION_VOLUME)
+
 class Ball(SpriteRenderer):
     def __init__(self, 
                  screen,
@@ -47,22 +53,26 @@ class Ball(SpriteRenderer):
         # * Collide Down
         # * Switch signed of y_speed when colliding top-down
         if self.rect.bottom >= HEIGHT:
+            pg.mixer.Sound.play(coin_collision_sfx)
             self.y_speed *= -1
             self.y_dir = Direction.UP
         
         # * Collide Up
         # * Switch signed of y_speed when colliding top-down
         if self.rect.top <= 0:
+            pg.mixer.Sound.play(coin_collision_sfx)
             self.y_speed *= -1
             self.y_dir = Direction.DOWN
             
         # * Side
         # * Switch signed of x_speed when colliding top-down
         if self.rect.left <= 0:
+            pg.mixer.Sound.play(coin_collision_sfx)
             self.x_speed *= -1
             self.x_dir = Direction.RIGHT
             
         if self.rect.right >= WIDTH:
+            pg.mixer.Sound.play(coin_collision_sfx)
             self.x_speed *= -1
             self.x_dir = Direction.LEFT
             
@@ -76,92 +86,116 @@ class Ball(SpriteRenderer):
                 if set(COLLIDE_INFO['BL']).issubset(hits):
                     if self.x_dir == Direction.LEFT and self.y_dir == Direction.DOWN:
                         if random.randint(0, 1) == 0:
+                            pg.mixer.Sound.play(coin_collision_sfx)
                             self.y_speed *= -1
                             self.y_dir = Direction.UP
                         else:
+                            pg.mixer.Sound.play(coin_collision_sfx)
                             self.x_speed *= -1
                             self.x_dir = Direction.RIGHT
                     elif self.x_dir == Direction.LEFT and self.y_dir == Direction.UP:
+                        pg.mixer.Sound.play(coin_collision_sfx)
                         self.x_speed *= -1
                         self.x_dir = Direction.RIGHT
                     elif self.x_dir == Direction.RIGHT and self.y_dir == Direction.DOWN:
+                        pg.mixer.Sound.play(coin_collision_sfx)
                         self.y_speed *= -1
                         self.y_dir = Direction.UP
                 # * Bottom Left Right
                 elif set(COLLIDE_INFO['BLR']).issubset(hits):
                     if self.x_dir == Direction.LEFT and self.y_dir == Direction.DOWN:
+                        pg.mixer.Sound.play(coin_collision_sfx)
                         self.y_speed *= -1
                         self.y_dir = Direction.UP
                     elif self.x_dir == Direction.RIGHT and self.y_dir == Direction.DOWN:
+                        pg.mixer.Sound.play(coin_collision_sfx)
                         self.y_speed *= -1
                         self.y_dir = Direction.UP
                 # * Bottom Right
                 elif set(COLLIDE_INFO['BR']).issubset(hits):
                     if self.x_dir == Direction.RIGHT and self.y_dir == Direction.DOWN:
                         if random.randint(0, 1) == 0:
+                            pg.mixer.Sound.play(coin_collision_sfx)
                             self.y_speed *= -1
                             self.y_dir = Direction.UP
                         else:
+                            pg.mixer.Sound.play(coin_collision_sfx)
                             self.x_speed *= -1
                             self.x_dir = Direction.LEFT
                     elif self.x_dir == Direction.RIGHT and self.y_dir == Direction.UP:
+                        pg.mixer.Sound.play(coin_collision_sfx)
                         self.x_speed *= -1
                         self.x_dir = Direction.LEFT
                     elif self.x_dir == Direction.LEFT and self.y_dir == Direction.DOWN:
+                        pg.mixer.Sound.play(coin_collision_sfx)
                         self.y_speed *= -1
                         self.y_dir = Direction.UP
                 # * Bottom Right Top
                 elif set(COLLIDE_INFO['BRT']).issubset(hits):
                     if self.x_dir == Direction.RIGHT and self.y_dir == Direction.DOWN:
+                        pg.mixer.Sound.play(coin_collision_sfx)
                         self.x_speed *= -1
                         self.x_dir = Direction.LEFT     
                     elif self.x_dir == Direction.RIGHT and self.y_dir == Direction.UP:
+                        pg.mixer.Sound.play(coin_collision_sfx)
                         self.x_speed *= -1
                         self.x_dir = Direction.RIGHT
                 # * Top Right
                 elif set(COLLIDE_INFO['TR']).issubset(hits):
                     if self.x_dir == Direction.RIGHT and self.y_dir == Direction.UP:
                         if random.randint(0, 1):
+                            pg.mixer.Sound.play(coin_collision_sfx)
                             self.y_speed *= -1
                             self.y_dir = Direction.DOWN
                         else:
+                            pg.mixer.Sound.play(coin_collision_sfx)
                             self.x_speed *= -1
                             self.x_dir = Direction.LEFT
                     elif self.x_dir == Direction.RIGHT and self.y_dir == Direction.DOWN:
+                        pg.mixer.Sound.play(coin_collision_sfx)
                         self.x_speed *= -1
                         self.x_dir = Direction.LEFT 
                     elif self.x_dir == Direction.LEFT and self.y_dir == Direction.UP:
+                        pg.mixer.Sound.play(coin_collision_sfx)
                         self.y_speed *= -1
                         self.y_dir = Direction.DOWN
                 # * Top Left Right
                 elif set(COLLIDE_INFO['TLR']).issubset(hits):
                     if self.x_dir == Direction.RIGHT and self.y_dir == Direction.UP:
+                        pg.mixer.Sound.play(coin_collision_sfx)
                         self.y_speed *= -1
                         self.y_dir = Direction.DOWN
                     elif self.x_dir == Direction.LEFT and self.y_dir == Direction.UP:
+                        pg.mixer.Sound.play(coin_collision_sfx)
                         self.y_speed *= -1
                         self.y_dir = Direction.DOWN
                 # * Top Left
                 elif set(COLLIDE_INFO['TL']).issubset(hits):
                     if self.x_dir == Direction.LEFT and self.y_dir == Direction.UP:
                         if random.randint(0, 1):
+                            pg.mixer.Sound.play(coin_collision_sfx)
                             self.x_speed *= -1
                             self.x_dir == Direction.RIGHT
                         else:
+                            pg.mixer.Sound.play(coin_collision_sfx)
                             self.y_speed *= -1
                             self.y_dir = Direction.DOWN
                     elif self.x_dir == Direction.RIGHT and self.y_dir == Direction.UP:
+                        pg.mixer.Sound.play(coin_collision_sfx)
                         self.y_speed *= -1
                         self.y_dir = Direction.DOWN 
                     elif self.x_dir == Direction.LEFT and self.y_dir == Direction.DOWN:
+                        pg.mixer.Sound.play(coin_collision_sfx)
                         self.x_speed *= -1
                         self.x_dir = Direction.RIGHT
                 # * Bottom Top Left
                 elif set(COLLIDE_INFO['BTL']).issubset(hits):
                     if self.x_dir == Direction.LEFT and self.y_dir == Direction.DOWN:
+                        pg.mixer.Sound.play(coin_collision_sfx)
                         self.x_speed *= -1
                         self.x_dir = Direction.RIGHT 
                     elif self.x_dir == Direction.LEFT and self.y_dir == Direction.UP:
+                        pg.mixer.Sound.play(coin_collision_sfx)
                         self.x_speed *= -1
                         self.x_dir = Direction.RIGHT
                             

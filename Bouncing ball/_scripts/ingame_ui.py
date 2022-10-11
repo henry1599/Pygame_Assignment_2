@@ -20,6 +20,42 @@ class InGameUI():
             fcolor=TITLE_COLOR, 
             anchor=Anchor.TOP_CENTER
         )
+        self.player01_instruction_movement = TextRenderer(
+            screen=screen,
+            font_path=FONT_PATH,
+            position=(10,10),
+            string="W,A,S,D for movement",
+            size=20,
+            fcolor=TITLE_COLOR,
+            anchor=Anchor.TOP_LEFT
+        )
+        self.player01_instruction_switch = TextRenderer(
+            screen=screen,
+            font_path=FONT_PATH,
+            position=(10,30),
+            string="F to switch",
+            size=20,
+            fcolor=TITLE_COLOR,
+            anchor=Anchor.TOP_LEFT
+        )
+        self.player02_instruction_movement = TextRenderer(
+            screen=screen,
+            font_path=FONT_PATH,
+            position=(WIDTH-10,10),
+            string="I,J,K,L for movement",
+            size=20,
+            fcolor=TITLE_COLOR,
+            anchor=Anchor.TOP_RIGHT
+        )
+        self.player02_instruction_switch = TextRenderer(
+            screen=screen,
+            font_path=FONT_PATH,
+            position=(WIDTH-10,30),
+            string="H to switch",
+            size=20,
+            fcolor=TITLE_COLOR,
+            anchor=Anchor.TOP_RIGHT
+        )
         self.player_1_score_ui = TextRenderer(
             screen=screen,
             font_path=FONT_PATH,
@@ -82,10 +118,15 @@ class InGameUI():
             if(self.waiting_time <= 0):
                 self.is_pause = False
 
-    def draw(self):
+    def draw(self, is_multi):
         self.timer_ui.update()
         self.player_1_score_ui.update()
         self.player_2_score_ui.update()
+        self.player01_instruction_movement.update()
+        self.player01_instruction_switch.update()
+        if not is_multi:
+            self.player02_instruction_movement.update()
+            self.player02_instruction_switch.update()
         if(self.last_player_goal):
             self.fade_screen.draw()
             self.annoucement.text = "Player " + str(self.last_player_goal) + " goal !!!"

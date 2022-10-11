@@ -48,6 +48,15 @@ PLAYER_SPRITES = [
 
 GOAL_PATH = '../_assets/sprites/players/Test/player_test.png'
 
+COIN_COLLISION_SFX = '../_sounds/Coin_Collision.wav'
+COIN_COLLISION_VOLUME = 0.5
+
+COIN_WIN_SFX = '../_sounds/Coin_Win.wav'
+COIN_WIN_VOLUME = 0.5
+
+THEME = '../_sounds/Theme.wav'
+THEME_VOLUME = 0.5
+
 PLAYER_TEST_SIZE = (270, 270)
 
 class Direction(Enum):
