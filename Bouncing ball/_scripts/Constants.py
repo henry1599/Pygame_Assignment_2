@@ -25,14 +25,29 @@ HEIGHT = 720
 FPS = 60
 random_color = (random.randrange(0,255),random.randrange(0,255),random.randrange(0,255))
 
-BALL_PATH = '../_assets/sprites/balls/ball.png'
-BALL_SIZE_IN_PIXEL = (500, 500)
+BALL_PATH = '../_assets/Casino/Casino_Coin.png'
+BALL_SIZE_IN_PIXEL = (182, 182)
 
-BACKGROUND_PATH = '../_assets/sprites/backgrounds/Background.png'
-BACKGROUND_WIDTH = 1300
-BACKGROUND_HEIGHT = 866
+SEPARATED_LINE = '../_assets/Casino/Separated_Line.png'
 
-PLAYER_TEST_PATH = '../_assets/sprites/players/Test/player_test.png'
+BACKGROUND_PATH = '../_assets/Casino/Casino_Table.png'
+BACKGROUND_WIDTH = 1676
+BACKGROUND_HEIGHT = 1119
+
+PLAYER_RED_01 = '../_assets/Casino/Player_Red_01.png'
+PLAYER_RED_02 = '../_assets/Casino/Player_Red_02.png'
+PLAYER_BLACK_01 = '../_assets/Casino/Player_Black_01.png'
+PLAYER_BLACK_02 = '../_assets/Casino/Player_Black_02.png'
+
+PLAYER_SPRITES = [
+    PLAYER_RED_01,
+    PLAYER_RED_02,
+    PLAYER_BLACK_01,
+    PLAYER_BLACK_02
+]
+
+GOAL_PATH = '../_assets/sprites/players/Test/player_test.png'
+
 PLAYER_TEST_SIZE = (270, 270)
 
 class Direction(Enum):
@@ -63,7 +78,8 @@ GAME_NAME_TEXT_SIZE = 100
 GAME_NAME_COLOR = (255, 255, 255)
 GAME_NAME_COLOR_OUTLINE = (0, 0, 0)
 
-START_TITLE = "Let's Go"
+SINGLE_TITLE = "PvE"
+MULTIPLE_TITLE = "PvP"
 TITLE_TEXT_SIZE = 50
 TITLE_COLOR = (255, 255, 255)
 

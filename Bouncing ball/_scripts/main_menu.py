@@ -48,6 +48,7 @@ class ButtonTextRenderer(TextRenderer):
 class MainMenu():
     def __init__(self, screen):
         self.is_show = True
+        self.is_multi = True
         self.game_name_text = TextRenderer(
             screen,
             FONT_PATH, 
@@ -60,11 +61,11 @@ class MainMenu():
             GAME_NAME_COLOR_OUTLINE, 
             4
         )
-        self.start_title = ButtonTextRenderer(
+        self.single_player = ButtonTextRenderer(
             screen,
             FONT_PATH, 
-            (WIDTH / 2, HEIGHT / 2), 
-            START_TITLE, 
+            (WIDTH / 2 - 100, HEIGHT / 2), 
+            SINGLE_TITLE, 
             TITLE_TEXT_SIZE, 
             TITLE_COLOR, 
             Anchor.MID_CENTER,
@@ -73,11 +74,30 @@ class MainMenu():
             2,
             ButtonType.START
         )
-    def start(self):
+        self.multi_player = ButtonTextRenderer(
+            screen,
+            FONT_PATH, 
+            (WIDTH / 2 + 100, HEIGHT / 2), 
+            MULTIPLE_TITLE, 
+            TITLE_TEXT_SIZE, 
+            TITLE_COLOR, 
+            Anchor.MID_CENTER,
+            True,
+            GAME_NAME_COLOR_OUTLINE, 
+            2,
+            ButtonType.START
+        )
+    def start_single(self):
         self.is_show = False
+        self.is_multi = False
+    def start_multi(self):
+        self.is_show = False
+        self.is_multi = True
     def quit(self):
         pass
     def update(self):
         self.game_name_text.update()
-        self.start_title.update()
-        self.start_title.gather_input(self.start)
+        self.single_player.update()
+        self.multi_player.update()
+        self.single_player.gather_input(self.start_single)
+        self.multi_player.gather_input(self.start_multi)
