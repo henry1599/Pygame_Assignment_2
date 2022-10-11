@@ -82,7 +82,7 @@ class Scene(Enum):
 
 FONT_PATH  = '../_fonts/Dosis/Dosis-Bold.ttf'
 
-GAME_NAME = "BOUNCING GAME"
+GAME_NAME = "ACE OF BOUNCE"
 GAME_NAME_TEXT_SIZE = 100
 GAME_NAME_COLOR = (255, 255, 255)
 GAME_NAME_COLOR_OUTLINE = (0, 0, 0)
