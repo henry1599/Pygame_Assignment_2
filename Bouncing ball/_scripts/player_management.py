@@ -47,9 +47,6 @@ def update_players(ball, multiplayer):
     else:
         updateBot(ball)
 
-    if keys[KEYBOARD_1["left"]] or keys[KEYBOARD_1["right"]] or keys[KEYBOARD_1["up"]] or keys[KEYBOARD_1["down"]]:
-        moverment(players[TEAM_1][focus_player[TEAM_1]], KEYBOARD_1)
-
     
     
 def draw_players():
@@ -77,26 +74,25 @@ def switch_players(team):
 def get_all_players():
     return players
 
-time_focus_bot = 0
-dir = [0, 0]
-
 def updateBot(ball):
     dir = [0,0]
-    # global time_focus_bot
-    # each 2s, update new bot's player to focus 
-    # if time_focus_bot == 0:
-    if get_distance_to_ball(ball, players[TEAM_1][0]) >= get_distance_to_ball(ball, players[TEAM_1][1]):
-        focus_player[TEAM_1] = 0
-    else:
-        focus_player[TEAM_1] = 1
-    #         time_focus_bot = FPS * 2
-    # time_focus_bot -= 1
-    player = players[TEAM_1][focus_player[TEAM_1]]
     
-    # each 0.5s, update new velocity of bot's player
-    # if time_focus_bot % (FPS / 2) == 0:
-    delta_x = ball.rect.x - player.position[0]
-    delta_y = ball.rect.y - player.position[1]
+    new_x = ball.rect.x + ball.x_speed * 30
+    new_y = ball.rect.y + ball.y_speed * 30
+
+    player1_to_ball = get_distance_to_ball([new_x, new_y], players[TEAM_1][0])
+    player2_to_ball = get_distance_to_ball([new_x, new_y], players[TEAM_1][1])
+
+    # if the ball is too far from players, not move
+    if player1_to_ball > abs(WIDTH / 2) and player2_to_ball > abs(WIDTH / 2): return
+
+    if player1_to_ball >= player2_to_ball:
+        player = players[TEAM_1][0]
+    else:
+        player = players[TEAM_1][1]
+    
+    delta_x = new_x - player.position[0]
+    delta_y = new_y - player.position[1]
     if abs(delta_y) >= abs(delta_x):
         if delta_y > 0: dir[1] = 1
         else: dir[1] = -1
@@ -108,4 +104,4 @@ def updateBot(ball):
 
 
 def get_distance_to_ball(ball, player):
-    return abs(ball.rect.x - player.position[0]) + abs(ball.rect.y - player.position[1])
+    return abs(ball[0] - player.position[0]) + abs(ball[1] - player.position[1])
