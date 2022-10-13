@@ -2,12 +2,17 @@ import pygame as pg
 from tile import Tile 
 from setting import tile_size, screen_width
 from player import *
+import time
 
 class Level:
     def __init__(self, level_data, surface):
         self.display_surface = surface
         self.setupLevel(level_data)
         self.world_offset = 0
+        self.current_x = 0
+        self.old_time = time.time()
+        self.delta_time = 0
+        self.clock = pg.time.Clock()
 
     def setupLevel(self, layout):
         self.tiles = pg.sprite.Group()
@@ -47,29 +52,54 @@ class Level:
             if sprite.rect.colliderect(player.rect):
                 if player.direction.x < 0:
                     player.rect.left = sprite.rect.right
+                    player.on_left = True
+                    self.current_x = player.rect.left
                 elif player.direction.x > 0:
                     player.rect.right = sprite.rect.left
+                    player.on_right = True
+                    self.current_x = player.rect.right
+        if player.on_left and (player.rect.left < self.current_x or player.direction.x >= 0):
+            player.on_left = False
+        if player.on_right and (player.rect.right > self.current_x or player.direction.x <= 0):
+            player.on_right = False
     
     def vertical_movement_collision(self):
         player = self.player.sprite
-        player.applyGravity()
+        if not player.is_attacking:
+            player.applyGravity()
+        else:
+            return
 
         for sprite in self.tiles.sprites():
             if sprite.rect.colliderect(player.rect):
                 if player.direction.y > 0:
+                    # if not player.is_attacking:
                     player.rect.bottom = sprite.rect.top
                     player.direction.y = 0
+                    player.on_ground = True
                 elif player.direction.y < 0:
+                    # if not player.is_attacking:
                     player.rect.top = sprite.rect.bottom
                     player.direction.y = 0
+                    player.on_ceiling = True
+
+        if player.on_ground and player.direction.y < 0 or player.direction.y > player.gravity + 0.1:
+            player.on_ground = False
+        if player.on_ceiling and player.direction.y > 0:
+            player.on_ceiling = False
     
     def run(self):
+        # update delta time
+        now = time.time()
+        self.delta_time = now - self.old_time
+        self.old_time = now
+        
         self.tiles.update(self.world_offset)
         
         self.tiles.draw(self.display_surface)
         self.scroll_horizontally()
 
-        self.player.update()
+        self.player.update(self.delta_time)
         self.horizontal_movement_collision()
         self.vertical_movement_collision()
         self.player.draw(self.display_surface)
