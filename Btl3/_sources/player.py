@@ -1,14 +1,17 @@
 import pygame as pg
 from helper import *
 from setting import *
+from particle import *
 
 class Player(pg.sprite.Sprite):
-    def __init__(self, position):
+    def __init__(self, position, surf):
         super().__init__()
+        self.display_surf = surf
         self.getAssets()
         self.frame_idx = 0
-        self.image = self.animations[State.IDLE()][self.frame_idx]
-        self.image = pg.transform.scale(self.image, (player_sizes[State.IDLE()][0] * player_scale, player_sizes[State.IDLE()][1] * player_scale))
+        self.type = PlayerType.LIGHT()
+        self.image = self.animations_Light[State.IDLE()][self.frame_idx]
+        self.image = pg.transform.scale(self.image, (player_sizes[self.type][State.IDLE()][0] * player_scale, player_sizes[self.type][State.IDLE()][1] * player_scale))
         self.rect = self.image.get_rect(topleft = position)
         self.state = State.IDLE()
         self.facing_right = True
@@ -20,23 +23,44 @@ class Player(pg.sprite.Sprite):
         self.attack_idx = 0
         self.attack_buffer = 1.5
         self.attack_buffer_counter = 1.5
+        self.is_transforming = False
 
         # move
         self.direction = pg.math.Vector2(0, 0)
         self.speed = 5
         self.gravity = 0.8
         self.jump_speed = -16
+        
+        self.particle = pg.sprite.GroupSingle()
+        particle = VFX_Transform(position, self.type, self)
+        self.particle.add(particle)
     
     def getAssets(self):
-        path = '../_assets/Character/'
-        self.animations = {
+        path_Light = '../_assets/Character/'
+        path_Dark = '../_assets/Dark/Dark/'
+        self.animations_Light = {
             State.IDLE() : [],
             State.RUN() : [],
             State.JUMP() : [],
             State.FALL() : [],
             State.ATTACK01() : [],
             State.ATTACK02() : [],
-            State.ATTACK03() : []
+            State.ATTACK03() : [],
+            State.TRANSFORM() : []
+        }
+        self.animations_Dark = {
+            State.IDLE() : [],
+            State.RUN() : [],
+            State.JUMP() : [],
+            State.FALL() : [],
+            State.ATTACK01() : [],
+            State.ATTACK02() : [],
+            State.ATTACK03() : [],
+            State.TRANSFORM() : []
+        }
+        self.animations = {
+            PlayerType.LIGHT() : self.animations_Light,
+            PlayerType.DARK() : self.animations_Dark
         }
         
         self.attack_states = [
@@ -45,29 +69,43 @@ class Player(pg.sprite.Sprite):
             State.ATTACK03()
         ]
         
-        for animation in self.animations.keys():
+        for animation in self.animations_Light.keys():
             # print(animation.value)
-            full_path = path + animation
-            self.animations[animation] = readFolder(full_path)
+            full_path = path_Light + animation
+            self.animations_Light[animation] = readFolder(full_path)
+        for animation in self.animations_Dark.keys():
+            # print(animation.value)
+            full_path = path_Dark + animation
+            self.animations_Dark[animation] = readFolder(full_path)
     
     def animate(self):
-        animation = self.animations[self.state]
-        
-        self.frame_idx += player_anim_speed[self.state]
+        animation = self.animations[self.type][self.state]
+        self.frame_idx += player_anim_speed[self.type][self.state]
         if self.frame_idx >= len(animation):
             self.frame_idx = 0
+            if self.is_transforming:
+                self.is_transforming = False
+                if self.type == PlayerType.LIGHT():
+                    self.type = PlayerType.DARK()
+                else:
+                    self.type = PlayerType.LIGHT()
+                self.state = State.IDLE()
             if self.is_attacking:
                 self.is_attacking = False
         
         image = animation[int(self.frame_idx)]
-        image = pg.transform.scale(image, (player_sizes[self.state][0] * player_scale, player_sizes[self.state][1] * player_scale))
+        image = pg.transform.scale(image, (player_sizes[self.type][self.state][0] * player_scale, player_sizes[self.type][self.state][1] * player_scale))
+
         if self.facing_right:
             self.image = image
         else:
             flipped_image = pg.transform.flip(image, True, False)
             self.image = flipped_image
         
-        if self.is_attacking:
+        
+        if self.is_transforming:
+            self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
+        elif self.is_attacking:
             self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
         elif self.on_ground and self.on_right:
             self.rect = self.image.get_rect(bottomright = self.rect.bottomright)
@@ -85,6 +123,9 @@ class Player(pg.sprite.Sprite):
     def gatherInput(self):
         keys = pg.key.get_pressed()
         
+        if self.is_transforming:
+            return
+        
         if keys[pg.K_RIGHT]:
             self.direction.x = 1
             self.facing_right = True
@@ -94,14 +135,18 @@ class Player(pg.sprite.Sprite):
         else:
             self.direction.x = 0 
 
-        if keys[pg.K_c] and not self.is_attacking and self.on_ground:
+        if keys[pg.K_x] and self.on_ground and not self.is_transforming:
+            self.transform()
+        if keys[pg.K_c] and not self.is_attacking and self.on_ground and not self.is_transforming:
             self.attack()
             self.direction.x = 0
         if keys[pg.K_SPACE] and self.on_ground:
             self.jump()
     
     def getState(self):
-        if self.is_attacking:
+        if self.is_transforming:
+            self.state = State.TRANSFORM()
+        elif self.is_attacking:
             self.state = self.attack_states[self.attack_idx]
         elif self.direction.y < 0:
             self.state = State.JUMP()
@@ -114,6 +159,8 @@ class Player(pg.sprite.Sprite):
                 self.state = State.IDLE()
     
     def applyGravity(self):
+        if self.is_transforming:
+            return
         self.direction.y += self.gravity
         self.rect.y += self.direction.y
     
@@ -127,7 +174,11 @@ class Player(pg.sprite.Sprite):
             self.attack_idx = 0
             self.attack_buffer_counter = self.attack_buffer
             
-            
+    def transform(self):
+        self.particle.sprite.frame_idx = 0
+        self.frame_idx = 0
+        self.direction.x = 0
+        self.is_transforming = True 
     
     def attack(self):
         self.frame_idx = 0
@@ -142,3 +193,6 @@ class Player(pg.sprite.Sprite):
         self.gatherInput()
         self.getState()
         self.animate()
+        if self.is_transforming:
+            self.particle.update(self.rect, self)
+            self.particle.draw(self.display_surf)

@@ -8,7 +8,8 @@ class Level:
     def __init__(self, level_data, surface):
         self.display_surface = surface
         self.setupLevel(level_data)
-        self.world_offset = 0
+        self.world_offset_x = 0
+        self.world_offset_y = 0
         self.current_x = 0
         self.old_time = time.time()
         self.delta_time = 0
@@ -24,10 +25,10 @@ class Level:
                 y_pos = row_index * tile_size
                 pos = (x_pos, y_pos)
                 if col == 'X':
-                    tile = Tile(pos, tile_size)
+                    tile = Tile(pos, tile_size, level_theme[PlayerType.LIGHT()]['tile'])
                     self.tiles.add(tile)
                 if col == 'P':
-                    player = Player(pos)
+                    player = Player(pos, self.display_surface)
                     self.player.add(player)
                     
     def scroll_horizontally(self):
@@ -36,13 +37,13 @@ class Level:
         direction_x = player.direction.x
 
         if player_x < screen_width / 4 and direction_x < 0:
-            self.world_offset = 5
+            self.world_offset_x = 5
             player.speed = 0
         elif player_x > screen_width * 3 / 4 and direction_x > 0:
-            self.world_offset = -5
+            self.world_offset_x = -5
             player.speed = 0
         else:
-            self.world_offset = 0
+            self.world_offset_x = 0
             player.speed = 5
     
     def horizontal_movement_collision(self):
@@ -65,7 +66,7 @@ class Level:
     
     def vertical_movement_collision(self):
         player = self.player.sprite
-        if not player.is_attacking:
+        if not player.is_attacking and not player.is_transforming:
             player.applyGravity()
         else:
             return
@@ -93,11 +94,12 @@ class Level:
         now = time.time()
         self.delta_time = now - self.old_time
         self.old_time = now
-        
-        self.tiles.update(self.world_offset)
+        self.display_surface.fill(level_theme[self.player.sprite.type]['background'])
+        self.tiles.update(self.player.sprite, self.world_offset_x, self.world_offset_y)
         
         self.tiles.draw(self.display_surface)
         self.scroll_horizontally()
+        # self.scroll_vertically()
 
         self.player.update(self.delta_time)
         self.horizontal_movement_collision()

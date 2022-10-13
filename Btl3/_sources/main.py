@@ -14,8 +14,7 @@ while True:
         if event.type == pg.QUIT:
             pg.quit() 
             sys.exit()
-    
-    screen.fill('black')
+            
     level.run()
     
     pg.display.update()
