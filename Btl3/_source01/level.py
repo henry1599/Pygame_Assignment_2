@@ -3,14 +3,60 @@ from level_data import *
 from helper import *
 from setting import *
 from tile import *
+from enemy import *
+from stuff import *
+from player import *
+import time
 
 class Level:
     def __init__(self, level_data, surface):
         self.display_surface = surface 
+        self.world_shift = 0
+        
+        self.old_time = time.time()
+        self.delta_time = 0
+        self.clock = pg.time.Clock()
+        
+        player_layout = readCSVLayout(level_data[LevelType.PLAYER()])
+        self.player = pg.sprite.GroupSingle()
+        self.goal = pg.sprite.GroupSingle()
+        self.player_setup(player_layout)
         
         terrain_layout = readCSVLayout(level_data[LevelType.TERRAIN()])
         self.terrain_sprites = self.createTileGroup(terrain_layout, LevelType.TERRAIN())
+
+        coin_layout = readCSVLayout(level_data[LevelType.COLLECTIBLE()])
+        self.coin_sprites = self.createTileGroup(coin_layout, LevelType.COLLECTIBLE())
+
+        enemy_layout = readCSVLayout(level_data[LevelType.ENEMY()])
+        self.enemy_sprites = self.createTileGroup(enemy_layout, LevelType.ENEMY())
+
+        constraints_layout = readCSVLayout(level_data[LevelType.CONSTRAINTS()])
+        self.constraints_sprites = self.createTileGroup(constraints_layout, LevelType.CONSTRAINTS())
+        
+        self.back_sprites = self.createBackgroundImage(BACK_PATH)
+        self.front_sprites = self.createBackgroundImage(FRONT_PATH)
+        self.background_sprites = self.createBackgroundImage(BACKGROUND_PATH)
+        
+        level_width = len(terrain_layout[0]) * tile_size
+        self.water = Water(screen_height - 20, level_width)
     
+    def player_setup(self, layout):
+        for row_idx, row in enumerate(layout):
+            for col_idx, value in enumerate(row):
+                x = col_idx * tile_size
+                y = row_idx * tile_size
+                if value == '0':
+                    sprite = Player((x, y), self.display_surface)
+                    self.player.add(sprite)
+        
+    def createBackgroundImage(self, path):
+        sprite_group = pg.sprite.Group()
+        sprite = StaticPng(path)
+        sprite_group.add(sprite)
+        
+        return sprite_group
+        
     def createTileGroup(self, layout, type):
         sprite_group = pg.sprite.Group()
 
@@ -21,10 +67,120 @@ class Level:
                     y = row_idx * tile_size
                     
                     if type == LevelType.TERRAIN():
-                        sprite = Tile(tile_size, x, y, type)
-                        sprite_group.add(sprite)
+                        terrain_tile_list = readCutGraphics(TERRAIN_TILESET_PATH)
+                        tile_surface = terrain_tile_list[int(value)]
+                        sprite = StaticTile(tile_size, x, y, tile_surface)
+                    
+                    if type == LevelType.COLLECTIBLE():
+                        sprite = Collectible(COIN_PATH, x, y)
+                    
+                    if type == LevelType.ENEMY():
+                        sprite = Enemy(x, y)
+                    
+                    if type == LevelType.CONSTRAINTS():
+                        sprite = Tile(tile_size, x, y)
+                        
+                    sprite_group.add(sprite)
         
         return sprite_group
     
+    def collision_enemy_reverse(self):
+        for enemy in self.enemy_sprites.sprites():
+            if pg.sprite.spritecollide(enemy, self.constraints_sprites, False):
+                enemy.reverse()
+    
+    def horizontal_movement_collision(self):
+        player = self.player.sprite
+        player.rect.x += player.direction.x * player.speed
+        for sprite in self.terrain_sprites.sprites():
+            if sprite.rect.colliderect(player.rect):
+                if player.direction.x < 0:
+                    player.rect.left = sprite.rect.right
+                    player.on_left = True
+                    self.current_x = player.rect.left
+                elif player.direction.x > 0:
+                    player.rect.right = sprite.rect.left
+                    player.on_right = True
+                    self.current_x = player.rect.right
+        if player.on_left and (player.rect.left < self.current_x or player.direction.x >= 0):
+            player.on_left = False
+        if player.on_right and (player.rect.right > self.current_x or player.direction.x <= 0):
+            player.on_right = False
+    
+    def vertical_movement_collision(self):
+        player = self.player.sprite
+        if not player.is_attacking and not player.is_transforming:
+            player.applyGravity()
+        else:
+            return
+
+        for sprite in self.terrain_sprites.sprites():
+            if sprite.rect.colliderect(player.rect):
+                if player.direction.y > 0:
+                    # if not player.is_attacking:
+                    player.rect.bottom = sprite.rect.top
+                    player.direction.y = 0
+                    player.on_ground = True
+                    player.get_peak = False
+                elif player.direction.y < 0:
+                    # if not player.is_attacking:
+                    player.rect.top = sprite.rect.bottom
+                    player.direction.y = 0
+                    player.on_ceiling = True
+                    player.get_peak = False
+
+        if player.on_ground and player.direction.y < 0 or player.direction.y > player.gravity + 0.1:
+            player.on_ground = False
+        if player.on_ceiling and player.direction.y > 0:
+            player.on_ceiling = False
+    
+    def scroll_horizontally(self):
+        player = self.player.sprite    
+        player_x = player.rect.centerx
+        direction_x = player.direction.x
+
+        if player_x < screen_width / 4 and direction_x < 0:
+            self.world_shift = 5
+            player.speed = 0
+        elif player_x > screen_width * 3 / 4 and direction_x > 0:
+            self.world_shift = -5
+            player.speed = 0
+        else:
+            self.world_shift = 0
+            player.speed = 5
+    
     def run(self):
+        now = time.time()
+        self.delta_time = now - self.old_time
+        self.old_time = now
+        
+        self.background_sprites.draw(self.display_surface)
+        self.background_sprites.update(self.world_shift)
+        
+        self.back_sprites.draw(self.display_surface)
+        self.back_sprites.update(self.world_shift)
+        
         self.terrain_sprites.draw(self.display_surface)
+        self.terrain_sprites.update(self.world_shift)
+        
+        self.coin_sprites.draw(self.display_surface)
+        self.coin_sprites.update(self.world_shift)
+        
+        self.enemy_sprites.update(self.world_shift)
+        self.constraints_sprites.update(self.world_shift)
+        self.collision_enemy_reverse()
+        self.enemy_sprites.draw(self.display_surface)
+        
+        self.player.update(self.delta_time)
+        self.player.draw(self.display_surface)
+        self.horizontal_movement_collision()
+        self.vertical_movement_collision()
+        
+        self.front_sprites.draw(self.display_surface)
+        self.front_sprites.update(self.world_shift)
+        
+        self.water.draw(self.display_surface,self.world_shift)
+
+        self.scroll_horizontally()
+        
+        

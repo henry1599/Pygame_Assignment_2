@@ -29,7 +29,10 @@ class Player(pg.sprite.Sprite):
         self.direction = pg.math.Vector2(0, 0)
         self.speed = 5
         self.gravity = 0.8
-        self.jump_speed = -16
+        self.jump_speed = -8.0
+        self.max_jump_speed = -11.0
+        self.jump_buffer = -1.0
+        self.get_peak = False
         
         self.particle = pg.sprite.GroupSingle()
         particle = VFX_Transform(position, self.type, self)
@@ -140,8 +143,11 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_c] and not self.is_attacking and self.on_ground and not self.is_transforming:
             self.attack()
             self.direction.x = 0
-        if keys[pg.K_SPACE] and self.on_ground:
-            self.jump()
+        if keys[pg.K_SPACE]:
+            if self.on_ground:
+                self.jump()
+            elif not self.get_peak:
+                self.long_jump()
     
     def getState(self):
         if self.is_transforming:
@@ -166,6 +172,15 @@ class Player(pg.sprite.Sprite):
     
     def jump(self):
         self.direction.y = self.jump_speed
+    
+    def long_jump(self):
+        y_val = self.direction.y
+        y_buff = self.jump_buffer
+        y_val = y_val + y_buff
+        if y_val < self.max_jump_speed:
+            self.get_peak = True
+            y_val = self.max_jump_speed
+        self.direction.y = y_val
 
     def countdownAttackBuffer(self, delta_time):
         if self.attack_buffer_counter > 0:
