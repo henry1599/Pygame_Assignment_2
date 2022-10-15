@@ -16,7 +16,7 @@ from audio import *
 # light
 
 class Level:
-    def __init__(self, current_level, surface, create_overworld, update_coins, update_health):
+    def __init__(self, current_level, surface, create_overworld, update_coins, update_health, update_energy):
         self.display_surface = surface 
         self.world_shift = 0
         
@@ -41,7 +41,7 @@ class Level:
         player_layout = readCSVLayout(level_data[LevelType.PLAYER()])
         self.player = pg.sprite.GroupSingle()
         self.goal = pg.sprite.GroupSingle()
-        self.player_setup(player_layout, update_health)
+        self.player_setup(player_layout, update_health, update_energy)
         
         terrain_layout = readCSVLayout(level_data[LevelType.TERRAIN()])
         self.terrain_sprites = self.createTileGroup(terrain_layout, LevelType.TERRAIN())
@@ -82,13 +82,13 @@ class Level:
         self.SFX[SFXType.COIN_COLLECT()].set_volume(0.5)
         self.SFX[SFXType.ENEMY_DIE()].set_volume(0.5)
     
-    def player_setup(self, layout, update_health):
+    def player_setup(self, layout, update_health, update_energy):
         for row_idx, row in enumerate(layout):
             for col_idx, value in enumerate(row):
                 x = col_idx * tile_size
                 y = row_idx * tile_size
                 if value == '0':
-                    sprite = Player((x, y), self.display_surface, update_health, self.update_light)
+                    sprite = Player((x, y), self.display_surface, update_health, self.update_light, update_energy)
                     self.player.add(sprite)
                     self.light.player = self.player
         

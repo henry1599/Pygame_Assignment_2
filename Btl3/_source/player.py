@@ -6,7 +6,7 @@ from math import sin
 from audio import *
 
 class Player(pg.sprite.Sprite):
-    def __init__(self, position, surf, update_health, update_light):
+    def __init__(self, position, surf, update_health, update_light, update_energy):
         super().__init__()
         self.display_surf = surf
         self.getAssets()
@@ -28,6 +28,7 @@ class Player(pg.sprite.Sprite):
         self.is_transforming = False
         
         self.update_health = update_health
+        self.update_energy = update_energy
         self.update_light = update_light
         self.update_light(False)
 
@@ -35,6 +36,7 @@ class Player(pg.sprite.Sprite):
         self.direction = pg.math.Vector2(0, 0)
         self.speed = 5
         self.gravity = 0.8
+        self.jump_short_speed = -15.0
         self.jump_speed = -8.0
         self.max_jump_speed = -11.0
         self.jump_buffer = -1.0
@@ -51,6 +53,13 @@ class Player(pg.sprite.Sprite):
         self.loadSound()
         
         self.SFX[SFXType.RUN()].playloop()
+        
+        self.current_energy = 0
+        self.max_energy = 100
+        self.can_transform = False
+        
+        self.increase_factor = 0.1
+        self.decrease_factor = -0.15
     
     def loadSound(self):
         self.SFX = {
@@ -120,6 +129,7 @@ class Player(pg.sprite.Sprite):
                     self.update_light(True)
                 else:
                     self.type = PlayerType.LIGHT()
+                    self.get_peak = False
                     self.update_light(False)
                 self.state = State.IDLE()
             if self.is_attacking:
@@ -177,18 +187,27 @@ class Player(pg.sprite.Sprite):
             self.SFX[SFXType.RUN()].unmute()
         else:
             self.SFX[SFXType.RUN()].mute()
-
-        if keys[pg.K_x] and self.on_ground and not self.is_transforming:
+        
+        if not self.can_transform and self.type == PlayerType.DARK() and self.on_ground:
+            self.SFX[SFXType.TRANSFORMATION()].play()
+            self.transform()
+        
+        if keys[pg.K_x] and self.on_ground and not self.is_transforming and self.can_transform and not self.type == PlayerType.DARK():
             self.SFX[SFXType.TRANSFORMATION()].play()
             self.transform()
         if keys[pg.K_c] and not self.is_attacking and self.on_ground and not self.is_transforming:
             self.attack()
             self.direction.x = 0
-        if keys[pg.K_SPACE]:
-            if self.on_ground:
-                self.jump()
-            elif not self.get_peak:
-                self.long_jump()
+        if self.type == PlayerType.LIGHT():
+            if keys[pg.K_SPACE]:
+                if self.on_ground:
+                    self.jump()
+        elif self.type == PlayerType.DARK():
+            if keys[pg.K_SPACE]:
+                if self.on_ground:
+                    self.jump()
+                elif not self.get_peak:
+                    self.long_jump()
     
     def getState(self):
         if self.is_transforming:
@@ -215,7 +234,7 @@ class Player(pg.sprite.Sprite):
     
     def jump(self):
         self.SFX[SFXType.JUMP()].play()
-        self.direction.y = self.jump_speed
+        self.direction.y = self.jump_speed if self.type == PlayerType.DARK() else self.jump_short_speed
     
     def long_jump(self):
         y_val = self.direction.y
@@ -266,6 +285,8 @@ class Player(pg.sprite.Sprite):
         if value >= 0 : return 255
         else: return 0
     
+    
+    
     def update(self, delta_time):
         self.countdownAttackBuffer(delta_time)
         self.gatherInput()
@@ -273,6 +294,18 @@ class Player(pg.sprite.Sprite):
         self.animate()
         self.invincibility_timer()
         self.sin_value()
+        if self.type == PlayerType.LIGHT():
+            self.current_energy += self.increase_factor
+            if self.current_energy >= self.max_energy:
+                self.can_transform = True
+                self.current_energy = self.max_energy
+            self.update_energy(self.increase_factor)
+        elif self.type == PlayerType.DARK():
+            self.current_energy += self.decrease_factor
+            if self.current_energy <= 0:
+                self.can_transform = False
+                self.current_energy = 0
+            self.update_energy(self.decrease_factor)
         if self.is_transforming:
             self.particle.update(self.rect, self)
             self.particle.draw(self.display_surf)

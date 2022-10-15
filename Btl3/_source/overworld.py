@@ -41,7 +41,7 @@ class Overworld:
         self.create_level = create_level
         
         self.move_direction = pg.math.Vector2(0, 0)
-        self.speed = 8
+        self.speed = 18
         self.is_moving = False
         
         self.setup_nodes()
