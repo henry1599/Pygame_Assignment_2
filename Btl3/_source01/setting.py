@@ -1,5 +1,25 @@
 from enum import Enum
 
+class SFXType:
+    @staticmethod
+    def COIN_COLLECT() : return 'coin collect'
+    @staticmethod
+    def ENEMY_DIE() : return 'enemy die'
+    @staticmethod
+    def RUN() : return 'run'
+    @staticmethod
+    def JUMP() : return 'jump'
+    @staticmethod
+    def SWORD() : return 'sword'
+    @staticmethod
+    def HIT() : return 'hit'
+    @staticmethod
+    def OVERWORLD_THEME() : return 'ot'
+    @staticmethod
+    def LEVEL_THEME() : return 'lt'
+    @staticmethod
+    def RAIN() : return 'rain'
+
 class GameState:
     @staticmethod 
     def OVERWORLD() : return 'overworld'

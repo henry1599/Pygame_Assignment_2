@@ -7,6 +7,7 @@ from level_data import *
 from light import *
 from overworld import *
 from ui import *
+from audio import *
 
 class Game:
     def __init__(self):
@@ -19,16 +20,41 @@ class Game:
         
         self.overworld = Overworld(0, self.max_level, screen, self.create_level)
         self.status = GameState.OVERWORLD()
+        
+        self.loadSound()
+        self.initVolume()
+        
+        self.SFX[SFXType.OVERWORLD_THEME()].playloop()
+        self.SFX[SFXType.LEVEL_THEME()].stop()
+        self.SFX[SFXType.RAIN()].stop()
+    
+    def loadSound(self):
+        self.SFX = {
+            SFXType.OVERWORLD_THEME() : SFX('../_audio/overworld_theme.wav'),
+            SFXType.LEVEL_THEME() : SFX('../_audio/normal_level_theme.wav'),
+            SFXType.RAIN() : SFX('../_audio/rain.wav')
+        }
+    
+    def initVolume(self):
+        self.SFX[SFXType.OVERWORLD_THEME()].set_volume(0.5)
+        self.SFX[SFXType.LEVEL_THEME()].set_volume(0.65)
+        self.SFX[SFXType.RAIN()].set_volume(0.55)
     
     def create_overworld(self, current_level, new_max_level):
-        if new_max_level > self.max_level:
+        if new_max_level >= self.max_level:
             self.max_level = new_max_level
         self.overworld = Overworld(current_level, self.max_level, screen, self.create_level)
         self.status = GameState.OVERWORLD()
+        self.SFX[SFXType.OVERWORLD_THEME()].playloop()
+        self.SFX[SFXType.LEVEL_THEME()].stop()
+        self.SFX[SFXType.RAIN()].stop()
     
     def create_level(self, current_level):
         self.level = Level(current_level, screen, self.create_overworld, self.update_coins, self.update_health)
         self.status = GameState.LEVEL()
+        self.SFX[SFXType.OVERWORLD_THEME()].stop()
+        self.SFX[SFXType.LEVEL_THEME()].playloop()
+        self.SFX[SFXType.RAIN()].playloop()
     
     def update_coins(self, amount):
         self.coins += amount
@@ -38,12 +64,11 @@ class Game:
     
     def check_game_over(self):
         if self.current_health <= 0:
+            self.level.killallsoudns()
             self.current_health = 100
             self.coins = 0
-            self.max_level = 0
             self.overworld = Overworld(0, self.max_level, screen, self.create_level)
             self.status = GameState.OVERWORLD()
-            
     
     def run(self):
         if self.status == GameState.OVERWORLD():
@@ -59,28 +84,12 @@ screen = pg.display.set_mode((screen_width, screen_height))
 clock = pg.time.Clock()
 game = Game()
 
-# rain setup
-# rains = Rains(
-#     screen = screen,
-#     amount = 200
-# )
-
-# light
-# light = Light(
-#     screen = screen,
-#     path = '../_assets/light.png',
-#     scale = 3,
-#     dark_value = 250,
-#     player = level.player
-# )
-
 while True:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             pg.quit() 
             sys.exit()
     
-    # Game goes bruhhhhhhhhhhhhhhhhh
     screen.fill('black')
     game.run()
     

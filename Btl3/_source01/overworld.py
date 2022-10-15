@@ -59,6 +59,8 @@ class Overworld:
 
     def draw_path(self):
         points = [node[LevelProperties.NODE_POS()] for idx, node in enumerate(levels.values()) if idx <= self.max_level]
+        if len(points) < 2:
+            return
         pg.draw.lines(self.display_surface, 'white', False, points, width=30)
         pg.draw.lines(self.display_surface, 'black', False, points, width=20)
 
@@ -87,6 +89,9 @@ class Overworld:
                 self.icon.sprite.is_right = False
             elif keys[pg.K_RETURN]:
                 self.create_level(self.current_level)
+    
+    def restart(self):
+        self.create_level(self.current_level)
     
     def get_movement_data(self, move_factor):
         start = pg.math.Vector2(self.nodes.sprites()[self.current_level].rect.center)

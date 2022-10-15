@@ -9,6 +9,7 @@ from player import *
 import time
 from rain import *
 from light import *
+from audio import *
 
 # rain setup
 
@@ -29,6 +30,13 @@ class Level:
         self.old_time = time.time()
         self.delta_time = 0
         self.clock = pg.time.Clock()
+        
+        self.light = Light(
+            screen = surface,
+            path = '../_assets/light.png',
+            scale = 3,
+            dark_value = 250
+        )
         
         player_layout = readCSVLayout(level_data[LevelType.PLAYER()])
         self.player = pg.sprite.GroupSingle()
@@ -61,13 +69,18 @@ class Level:
             amount = 200
         )
         
-        self.light = Light(
-            screen = surface,
-            path = '../_assets/light.png',
-            scale = 3,
-            dark_value = 250,
-            player = self.player
-        )
+        self.loadSound()
+        self.initVolume()
+    
+    def loadSound(self):
+        self.SFX = {
+            SFXType.COIN_COLLECT() : SFX('../_audio/coin_collect.wav'),
+            SFXType.ENEMY_DIE() : SFX('../_audio/enemy_explosion.wav')
+        }
+    
+    def initVolume(self):
+        self.SFX[SFXType.COIN_COLLECT()].set_volume(0.5)
+        self.SFX[SFXType.ENEMY_DIE()].set_volume(0.5)
     
     def player_setup(self, layout, update_health):
         for row_idx, row in enumerate(layout):
@@ -75,8 +88,9 @@ class Level:
                 x = col_idx * tile_size
                 y = row_idx * tile_size
                 if value == '0':
-                    sprite = Player((x, y), self.display_surface, update_health)
+                    sprite = Player((x, y), self.display_surface, update_health, self.update_light)
                     self.player.add(sprite)
+                    self.light.player = self.player
         
     def createBackgroundImage(self, path):
         sprite_group = pg.sprite.Group()
@@ -180,7 +194,13 @@ class Level:
     
     def check_death(self):
         if self.player.sprite.rect.top > screen_height:
+            self.player.sprite.killallsounds()
             self.create_overworld(self.current_level, 0)
+    
+    def killallsoudns(self):
+        self.player.sprite.killallsounds()
+        for val in self.SFX.values():
+            val.stop()
     
     def check_win(self):
         pass
@@ -188,7 +208,8 @@ class Level:
     def check_coin_collision(self):
         collided_coins = pg.sprite.spritecollide(self.player.sprite, self.coin_sprites, True)
         if collided_coins:
-            for coin in collided_coins:
+            for _ in collided_coins:
+                self.SFX[SFXType.COIN_COLLECT()].play()
                 self.update_coins(1)
     
     def check_enemy_collision(self):
@@ -203,9 +224,13 @@ class Level:
                     explosion_sprite = ParticleEffect(enemy.rect.center, 'explosion')
                     self.explosion_sprites.add(explosion_sprite)
                     self.player.sprite.direction.y = -10
+                    self.SFX[SFXType.ENEMY_DIE()].play()
                     enemy.kill()
                 else:
                     self.player.sprite.get_damage()
+    
+    def update_light(self, status):
+        self.light.active(status)
     
     def run(self):
         self.check_death()

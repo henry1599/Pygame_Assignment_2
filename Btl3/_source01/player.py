@@ -3,9 +3,10 @@ from helper import *
 from setting import *
 from particle import *
 from math import sin
+from audio import *
 
 class Player(pg.sprite.Sprite):
-    def __init__(self, position, surf, update_health):
+    def __init__(self, position, surf, update_health, update_light):
         super().__init__()
         self.display_surf = surf
         self.getAssets()
@@ -27,6 +28,8 @@ class Player(pg.sprite.Sprite):
         self.is_transforming = False
         
         self.update_health = update_health
+        self.update_light = update_light
+        self.update_light(False)
 
         # move
         self.direction = pg.math.Vector2(0, 0)
@@ -44,6 +47,29 @@ class Player(pg.sprite.Sprite):
         self.is_invincible = False
         self.invinciblity_duration = 750
         self.hurt_time = 0
+        
+        self.loadSound()
+        self.initVolume()
+        
+        self.SFX[SFXType.RUN()].playloop()
+    
+    def loadSound(self):
+        self.SFX = {
+            SFXType.RUN() : SFX('../_audio/run.wav'),
+            SFXType.JUMP() : SFX('../_audio/jump.wav'),
+            SFXType.SWORD() : SFX('../_audio/sword_splash.wav'),
+            SFXType.HIT() : SFX('../_audio/player_hit_by_enemy.wav')
+        }
+    
+    def initVolume(self):
+        self.SFX[SFXType.RUN()].set_volume(0.25)
+        self.SFX[SFXType.JUMP()].set_volume(0.6)
+        self.SFX[SFXType.SWORD()].set_volume(0.75)
+        self.SFX[SFXType.HIT()].set_volume(0.75)
+    
+    def killallsounds(self):
+        for val in self.SFX.values():
+            val.stop()
     
     def getAssets(self):
         path_Light = '../_assets/Character/'
@@ -97,8 +123,10 @@ class Player(pg.sprite.Sprite):
                 self.is_transforming = False
                 if self.type == PlayerType.LIGHT():
                     self.type = PlayerType.DARK()
+                    self.update_light(True)
                 else:
                     self.type = PlayerType.LIGHT()
+                    self.update_light(False)
                 self.state = State.IDLE()
             if self.is_attacking:
                 self.is_attacking = False
@@ -150,6 +178,11 @@ class Player(pg.sprite.Sprite):
             self.facing_right = False
         else:
             self.direction.x = 0 
+            
+        if self.direction.x != 0 and self.on_ground:
+            self.SFX[SFXType.RUN()].unmute()
+        else:
+            self.SFX[SFXType.RUN()].mute()
 
         if keys[pg.K_x] and self.on_ground and not self.is_transforming:
             self.transform()
@@ -186,6 +219,7 @@ class Player(pg.sprite.Sprite):
         self.rect.y += self.direction.y
     
     def jump(self):
+        self.SFX[SFXType.JUMP()].play()
         self.direction.y = self.jump_speed
     
     def long_jump(self):
@@ -211,6 +245,7 @@ class Player(pg.sprite.Sprite):
         self.is_transforming = True 
     
     def attack(self):
+        self.SFX[SFXType.SWORD()].play()
         self.frame_idx = 0
         self.is_attacking = True
         self.direction.y = 0
@@ -220,6 +255,7 @@ class Player(pg.sprite.Sprite):
 
     def get_damage(self):
         if not self.is_invincible:
+            self.SFX[SFXType.HIT()].play()
             self.update_health(-10)
             self.is_invincible = True
             self.hurt_time = pg.time.get_ticks()
