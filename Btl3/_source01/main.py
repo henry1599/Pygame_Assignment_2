@@ -3,29 +3,76 @@ import sys
 from setting import *
 from rain import *
 from level import Level
-import time
-import random
-from level_data import level_0
+from level_data import *
+from light import *
+from overworld import *
+from ui import *
+
+class Game:
+    def __init__(self):
+        self.max_level = 1
+        self.max_health = 100
+        self.current_health = self.max_health
+        self.coins = 0
+        
+        self.ui = UI(screen)
+        
+        self.overworld = Overworld(0, self.max_level, screen, self.create_level)
+        self.status = GameState.OVERWORLD()
+    
+    def create_overworld(self, current_level, new_max_level):
+        if new_max_level > self.max_level:
+            self.max_level = new_max_level
+        self.overworld = Overworld(current_level, self.max_level, screen, self.create_level)
+        self.status = GameState.OVERWORLD()
+    
+    def create_level(self, current_level):
+        self.level = Level(current_level, screen, self.create_overworld, self.update_coins, self.update_health)
+        self.status = GameState.LEVEL()
+    
+    def update_coins(self, amount):
+        self.coins += amount
+    
+    def update_health(self, amount):
+        self.current_health += amount
+    
+    def check_game_over(self):
+        if self.current_health <= 0:
+            self.current_health = 100
+            self.coins = 0
+            self.max_level = 0
+            self.overworld = Overworld(0, self.max_level, screen, self.create_level)
+            self.status = GameState.OVERWORLD()
+            
+    
+    def run(self):
+        if self.status == GameState.OVERWORLD():
+            self.overworld.run()
+        else:
+            self.level.run()
+            self.ui.show_health(self.current_health, self.max_health)
+            self.ui.show_coin(self.coins)
+            self.check_game_over()
 
 pg.init()
 screen = pg.display.set_mode((screen_width, screen_height))
 clock = pg.time.Clock()
-level = Level(level_0, screen)
+game = Game()
 
 # rain setup
-rain_group = pg.sprite.Group()
-for i in range(200):
-    rain = Rain()
-    rain_group.add(rain)
+# rains = Rains(
+#     screen = screen,
+#     amount = 200
+# )
 
-thunderstorm = thunderstorm_color
-is_thunder = False
-
-light_scale = 3
-light = pg.image.load('../_assets/light.png').convert_alpha()
-light = pg.transform.scale(light, (light.get_size()[0] * light_scale, light.get_size()[1] * light_scale))
-light_rect = light.get_rect(bottomright = (0, 0))
-dark_value = 230
+# light
+# light = Light(
+#     screen = screen,
+#     path = '../_assets/light.png',
+#     scale = 3,
+#     dark_value = 250,
+#     player = level.player
+# )
 
 while True:
     for event in pg.event.get():
@@ -33,17 +80,9 @@ while True:
             pg.quit() 
             sys.exit()
     
-    rain_group.update()
-    level.run()
-    rain_group.draw(screen)
-
-    filter = pg.surface.Surface((screen_width, screen_height))
-    filter.fill(pg.color.Color(dark_value, dark_value, dark_value, 255))
-    light_rect = light.get_rect(bottomright = (level.player.sprite.rect.centerx, level.player.sprite.rect.centery))
-    light_position = light_rect.center
-    filter.blit(light, light_position, special_flags=pg.BLEND_RGBA_SUB)
-    screen.blit(filter, (0, 0), special_flags=pg.BLEND_RGBA_SUB)
-    # pg.display.flip()
-        
+    # Game goes bruhhhhhhhhhhhhhhhhh
+    screen.fill('black')
+    game.run()
+    
     pg.display.update()
     clock.tick(60)

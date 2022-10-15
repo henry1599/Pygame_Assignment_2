@@ -54,3 +54,26 @@ class VFX_Transform(pg.sprite.Sprite):
         self.type = player.type
         self.setPosition(rect)
         self.animate()
+        
+class ParticleEffect(pg.sprite.Sprite):
+    def __init__(self, pos, type):
+        super().__init__()
+        self.frame_index = 0
+        self.animation_speed = 0.5
+        if type == 'explosion':
+            self.frames = readFolder('../_assets/explosion')
+        self.image = self.frames[self.frame_index]
+        self.image = pg.transform.scale(self.image, (self.image.get_size()[0] * 3, self.image.get_size()[1] * 3))
+        self.rect = self.image.get_rect(center = pos)
+
+    def animate(self):
+        self.frame_index += self.animation_speed
+        if self.frame_index >= len(self.frames):
+            self.kill()
+        else:
+            self.image = self.frames[int(self.frame_index)]
+            self.image = pg.transform.scale(self.image, (self.image.get_size()[0] * 3, self.image.get_size()[1] * 3))
+
+    def update(self,x_shift):
+        self.animate()
+        self.rect.x += x_shift

@@ -2,9 +2,10 @@ import pygame as pg
 from helper import *
 from setting import *
 from particle import *
+from math import sin
 
 class Player(pg.sprite.Sprite):
-    def __init__(self, position, surf):
+    def __init__(self, position, surf, update_health):
         super().__init__()
         self.display_surf = surf
         self.getAssets()
@@ -24,6 +25,8 @@ class Player(pg.sprite.Sprite):
         self.attack_buffer = 1.5
         self.attack_buffer_counter = 1.5
         self.is_transforming = False
+        
+        self.update_health = update_health
 
         # move
         self.direction = pg.math.Vector2(0, 0)
@@ -37,6 +40,10 @@ class Player(pg.sprite.Sprite):
         self.particle = pg.sprite.GroupSingle()
         particle = VFX_Transform(position, self.type, self)
         self.particle.add(particle)
+        
+        self.is_invincible = False
+        self.invinciblity_duration = 750
+        self.hurt_time = 0
     
     def getAssets(self):
         path_Light = '../_assets/Character/'
@@ -95,6 +102,7 @@ class Player(pg.sprite.Sprite):
                 self.state = State.IDLE()
             if self.is_attacking:
                 self.is_attacking = False
+                self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
         
         image = animation[int(self.frame_idx)]
         image = pg.transform.scale(image, (player_sizes[self.type][self.state][0] * player_scale, player_sizes[self.type][self.state][1] * player_scale))
@@ -105,10 +113,13 @@ class Player(pg.sprite.Sprite):
             flipped_image = pg.transform.flip(image, True, False)
             self.image = flipped_image
         
+        if self.is_invincible:
+            alpha = self.sin_value()
+            self.image.set_alpha(alpha)
+        else:
+            self.image.set_alpha(255)
         
         if self.is_transforming:
-            self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
-        elif self.is_attacking:
             self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
         elif self.on_ground and self.on_right:
             self.rect = self.image.get_rect(bottomright = self.rect.bottomright)
@@ -127,6 +138,8 @@ class Player(pg.sprite.Sprite):
         keys = pg.key.get_pressed()
         
         if self.is_transforming:
+            return
+        if self.is_attacking:
             return
         
         if keys[pg.K_RIGHT]:
@@ -167,6 +180,8 @@ class Player(pg.sprite.Sprite):
     def applyGravity(self):
         if self.is_transforming:
             return
+        if self.is_attacking:
+            return
         self.direction.y += self.gravity
         self.rect.y += self.direction.y
     
@@ -203,11 +218,30 @@ class Player(pg.sprite.Sprite):
         self.attack_idx += 1
         self.attack_idx %= len(self.attack_states)
 
+    def get_damage(self):
+        if not self.is_invincible:
+            self.update_health(-10)
+            self.is_invincible = True
+            self.hurt_time = pg.time.get_ticks()
+
+    def invincibility_timer(self):
+        if self.is_invincible: 
+            current_time = pg.time.get_ticks()
+            if current_time - self.hurt_time >= self.invinciblity_duration:
+                self.is_invincible = False
+                
+    def sin_value(self):
+        value = sin(pg.time.get_ticks())
+        if value >= 0 : return 255
+        else: return 0
+    
     def update(self, delta_time):
         self.countdownAttackBuffer(delta_time)
         self.gatherInput()
         self.getState()
         self.animate()
+        self.invincibility_timer()
+        self.sin_value()
         if self.is_transforming:
             self.particle.update(self.rect, self)
             self.particle.draw(self.display_surf)

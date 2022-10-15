@@ -2,10 +2,23 @@ import pygame as pg
 import random
 from setting import *
 
+class Rains(pg.sprite.Sprite):
+    def __init__(self, screen, amount):
+        super().__init__() 
+        self.screen = screen
+        self.rain_group = pg.sprite.Group()
+        for _ in range(amount):
+            rain = Rain()
+            self.rain_group.add(rain)
+    
+    def update(self):
+        self.rain_group.update()
+        self.rain_group.draw(self.screen)
+
 class Rain(pg.sprite.Sprite):
     def __init__(self):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.image.load('../_levels/png/rain01.png')
+        self.image = pg.image.load('../_levels/png/rain01.png').convert_alpha()
         self.image.set_alpha(random.randint(50, 255))
         self.rect = self.image.get_rect()
         self.speedx = -5

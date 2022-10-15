@@ -1,4 +1,11 @@
 from enum import Enum
+
+class GameState:
+    @staticmethod 
+    def OVERWORLD() : return 'overworld'
+    @staticmethod
+    def LEVEL() : return 'level'
+
 class PlayerType:
     @staticmethod
     def LIGHT(): return 0 
@@ -45,6 +52,7 @@ BACK_PATH = '../_levels/level_data/back_tree.png'
 FRONT_PATH = '../_levels/level_data/front_tree.png'
 BACKGROUND_PATH = '../_levels/level_data/background_gold.png'
 COIN_PATH = '../_levels/png/coin01.png'
+ICON_PATH = '../_assets/icon.png'
 
 
 particle_scale = 2.5

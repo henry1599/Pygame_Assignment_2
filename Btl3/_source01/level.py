@@ -7,11 +7,24 @@ from enemy import *
 from stuff import *
 from player import *
 import time
+from rain import *
+from light import *
+
+# rain setup
+
+# light
 
 class Level:
-    def __init__(self, level_data, surface):
+    def __init__(self, current_level, surface, create_overworld, update_coins, update_health):
         self.display_surface = surface 
         self.world_shift = 0
+        
+        self.update_coins = update_coins
+        
+        self.create_overworld = create_overworld
+        self.current_level = current_level
+        level_data = levels[self.current_level]
+        self.new_max_level = level_data[LevelProperties.UNLOCK()]
         
         self.old_time = time.time()
         self.delta_time = 0
@@ -20,7 +33,7 @@ class Level:
         player_layout = readCSVLayout(level_data[LevelType.PLAYER()])
         self.player = pg.sprite.GroupSingle()
         self.goal = pg.sprite.GroupSingle()
-        self.player_setup(player_layout)
+        self.player_setup(player_layout, update_health)
         
         terrain_layout = readCSVLayout(level_data[LevelType.TERRAIN()])
         self.terrain_sprites = self.createTileGroup(terrain_layout, LevelType.TERRAIN())
@@ -40,14 +53,29 @@ class Level:
         
         level_width = len(terrain_layout[0]) * tile_size
         self.water = Water(screen_height - 20, level_width)
+        
+        self.explosion_sprites = pg.sprite.Group()
+        
+        self.rains = Rains(
+            screen = surface,
+            amount = 200
+        )
+        
+        self.light = Light(
+            screen = surface,
+            path = '../_assets/light.png',
+            scale = 3,
+            dark_value = 250,
+            player = self.player
+        )
     
-    def player_setup(self, layout):
+    def player_setup(self, layout, update_health):
         for row_idx, row in enumerate(layout):
             for col_idx, value in enumerate(row):
                 x = col_idx * tile_size
                 y = row_idx * tile_size
                 if value == '0':
-                    sprite = Player((x, y), self.display_surface)
+                    sprite = Player((x, y), self.display_surface, update_health)
                     self.player.add(sprite)
         
     def createBackgroundImage(self, path):
@@ -118,12 +146,18 @@ class Level:
             if sprite.rect.colliderect(player.rect):
                 if player.direction.y > 0:
                     # if not player.is_attacking:
+                    diff = abs(player.rect.bottom - sprite.rect.top)
+                    if diff > 100:
+                        return
                     player.rect.bottom = sprite.rect.top
                     player.direction.y = 0
                     player.on_ground = True
                     player.get_peak = False
                 elif player.direction.y < 0:
                     # if not player.is_attacking:
+                    # diff = abs(player.rect.bottom - sprite.rect.top)
+                    # if diff > 100:
+                    #     return
                     player.rect.top = sprite.rect.bottom
                     player.direction.y = 0
                     player.on_ceiling = True
@@ -149,7 +183,40 @@ class Level:
             self.world_shift = 0
             player.speed = 5
     
+    def check_death(self):
+        if self.player.sprite.rect.top > screen_height:
+            self.create_overworld(self.current_level, 0)
+    
+    def check_win(self):
+        pass
+    
+    def check_coin_collision(self):
+        collided_coins = pg.sprite.spritecollide(self.player.sprite, self.coin_sprites, True)
+        if collided_coins:
+            for coin in collided_coins:
+                self.update_coins(1)
+    
+    def check_enemy_collision(self):
+        enemy_collisions = pg.sprite.spritecollide(self.player.sprite, self.enemy_sprites, False)
+
+        if enemy_collisions:
+            for enemy in enemy_collisions:
+                enemy_center = enemy.rect.centery
+                enemy_top = enemy.rect.top
+                player_bottom = self.player.sprite.rect.bottom
+                if enemy_top < player_bottom < enemy_center and self.player.sprite.direction.y >= 0:
+                    explosion_sprite = ParticleEffect(enemy.rect.center, 'explosion')
+                    self.explosion_sprites.add(explosion_sprite)
+                    self.player.sprite.direction.y = -10
+                    enemy.kill()
+                else:
+                    self.player.sprite.get_damage()
+    
     def run(self):
+        self.check_death()
+        self.check_coin_collision()
+        self.check_enemy_collision()
+        
         now = time.time()
         self.delta_time = now - self.old_time
         self.old_time = now
@@ -170,6 +237,8 @@ class Level:
         self.constraints_sprites.update(self.world_shift)
         self.collision_enemy_reverse()
         self.enemy_sprites.draw(self.display_surface)
+        self.explosion_sprites.update(self.world_shift)
+        self.explosion_sprites.draw(self.display_surface)
         
         self.player.update(self.delta_time)
         self.player.draw(self.display_surface)
@@ -180,6 +249,8 @@ class Level:
         self.front_sprites.update(self.world_shift)
         
         self.water.draw(self.display_surface,self.world_shift)
+        self.rains.update()
+        self.light.update()
 
         self.scroll_horizontally()
         
