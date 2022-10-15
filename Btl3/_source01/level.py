@@ -145,23 +145,18 @@ class Level:
         for sprite in self.terrain_sprites.sprites():
             if sprite.rect.colliderect(player.rect):
                 if player.direction.y > 0:
-                    # if not player.is_attacking:
                     diff = abs(player.rect.bottom - sprite.rect.top)
-                    if diff > 100:
+                    if diff > 50:
                         return
                     player.rect.bottom = sprite.rect.top
                     player.direction.y = 0
                     player.on_ground = True
                     player.get_peak = False
                 elif player.direction.y < 0:
-                    # if not player.is_attacking:
-                    # diff = abs(player.rect.bottom - sprite.rect.top)
-                    # if diff > 100:
-                    #     return
                     player.rect.top = sprite.rect.bottom
                     player.direction.y = 0
                     player.on_ceiling = True
-                    player.get_peak = False
+                    player.get_peak = True
 
         if player.on_ground and player.direction.y < 0 or player.direction.y > player.gravity + 0.1:
             player.on_ground = False
