@@ -137,10 +137,16 @@ class Level:
         for sprite in self.terrain_sprites.sprites():
             if sprite.rect.colliderect(player.rect):
                 if player.direction.x < 0:
+                    diff = abs(player.rect.left - sprite.rect.right)
+                    if diff > 50:
+                        return
                     player.rect.left = sprite.rect.right
                     player.on_left = True
                     self.current_x = player.rect.left
                 elif player.direction.x > 0:
+                    diff = abs(player.rect.right - sprite.rect.left)
+                    if diff > 50:
+                        return
                     player.rect.right = sprite.rect.left
                     player.on_right = True
                     self.current_x = player.rect.right
@@ -167,6 +173,9 @@ class Level:
                     player.on_ground = True
                     player.get_peak = False
                 elif player.direction.y < 0:
+                    diff = abs(player.rect.top - sprite.rect.bottom)
+                    if diff > 50:
+                        return
                     player.rect.top = sprite.rect.bottom
                     player.direction.y = 0
                     player.on_ceiling = True
@@ -227,7 +236,13 @@ class Level:
                     self.SFX[SFXType.ENEMY_DIE()].play()
                     enemy.kill()
                 else:
-                    self.player.sprite.get_damage()
+                    if self.player.sprite.is_attacking:
+                        explosion_sprite = ParticleEffect(enemy.rect.center, 'explosion')
+                        self.explosion_sprites.add(explosion_sprite)
+                        self.SFX[SFXType.ENEMY_DIE()].play()
+                        enemy.kill()
+                    else:
+                        self.player.sprite.get_damage()
     
     def update_light(self, status):
         self.light.active(status)

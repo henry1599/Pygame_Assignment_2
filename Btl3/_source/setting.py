@@ -19,6 +19,8 @@ class SFXType:
     def LEVEL_THEME() : return 'lt'
     @staticmethod
     def RAIN() : return 'rain'
+    @staticmethod
+    def TRANSFORMATION() : return 'tf'
 
 class GameState:
     @staticmethod 

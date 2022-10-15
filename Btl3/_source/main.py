@@ -22,7 +22,6 @@ class Game:
         self.status = GameState.OVERWORLD()
         
         self.loadSound()
-        self.initVolume()
         
         self.SFX[SFXType.OVERWORLD_THEME()].playloop()
         self.SFX[SFXType.LEVEL_THEME()].stop()
@@ -30,15 +29,10 @@ class Game:
     
     def loadSound(self):
         self.SFX = {
-            SFXType.OVERWORLD_THEME() : SFX('../_audio/overworld_theme.wav'),
-            SFXType.LEVEL_THEME() : SFX('../_audio/normal_level_theme.wav'),
-            SFXType.RAIN() : SFX('../_audio/rain.wav')
+            SFXType.OVERWORLD_THEME() : SFX('../_audio/overworld_theme.wav', 0.5),
+            SFXType.LEVEL_THEME() : SFX('../_audio/normal_level_theme.wav', 0.35),
+            SFXType.RAIN() : SFX('../_audio/rain.wav', 0.25)
         }
-    
-    def initVolume(self):
-        self.SFX[SFXType.OVERWORLD_THEME()].set_volume(0.5)
-        self.SFX[SFXType.LEVEL_THEME()].set_volume(0.65)
-        self.SFX[SFXType.RAIN()].set_volume(0.55)
     
     def create_overworld(self, current_level, new_max_level):
         if new_max_level >= self.max_level:

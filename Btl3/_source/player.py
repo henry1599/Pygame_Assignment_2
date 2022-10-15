@@ -49,23 +49,17 @@ class Player(pg.sprite.Sprite):
         self.hurt_time = 0
         
         self.loadSound()
-        self.initVolume()
         
         self.SFX[SFXType.RUN()].playloop()
     
     def loadSound(self):
         self.SFX = {
-            SFXType.RUN() : SFX('../_audio/run.wav'),
-            SFXType.JUMP() : SFX('../_audio/jump.wav'),
-            SFXType.SWORD() : SFX('../_audio/sword_splash.wav'),
-            SFXType.HIT() : SFX('../_audio/player_hit_by_enemy.wav')
+            SFXType.RUN() : SFX('../_audio/run.wav', 0.15),
+            SFXType.JUMP() : SFX('../_audio/jump.wav', 0.6),
+            SFXType.SWORD() : SFX('../_audio/sword_splash.wav', 0.75),
+            SFXType.HIT() : SFX('../_audio/player_hit_by_enemy.wav', 0.75),
+            SFXType.TRANSFORMATION() : SFX('../_audio/transformation_02.wav', 0.5)
         }
-    
-    def initVolume(self):
-        self.SFX[SFXType.RUN()].set_volume(0.25)
-        self.SFX[SFXType.JUMP()].set_volume(0.6)
-        self.SFX[SFXType.SWORD()].set_volume(0.75)
-        self.SFX[SFXType.HIT()].set_volume(0.75)
     
     def killallsounds(self):
         for val in self.SFX.values():
@@ -185,6 +179,7 @@ class Player(pg.sprite.Sprite):
             self.SFX[SFXType.RUN()].mute()
 
         if keys[pg.K_x] and self.on_ground and not self.is_transforming:
+            self.SFX[SFXType.TRANSFORMATION()].play()
             self.transform()
         if keys[pg.K_c] and not self.is_attacking and self.on_ground and not self.is_transforming:
             self.attack()
