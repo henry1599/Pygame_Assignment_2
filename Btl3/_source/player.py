@@ -4,9 +4,10 @@ from setting import *
 from particle import *
 from math import sin
 from audio import *
+from ultimate import *
 
 class Player(pg.sprite.Sprite):
-    def __init__(self, position, surf, update_health, update_light, update_energy):
+    def __init__(self, position, surf, update_health, update_light, update_energy, world_shift):
         super().__init__()
         self.display_surf = surf
         self.getAssets()
@@ -58,8 +59,17 @@ class Player(pg.sprite.Sprite):
         self.max_energy = 100
         self.can_transform = False
         
-        self.increase_factor = 0.1
-        self.decrease_factor = -0.15
+        self.increase_factor = 0.3
+        self.decrease_factor = -0.01
+        
+        self.VFX_sprites = pg.sprite.Group()
+        self.is_ultimate = False
+        
+        self.worldShift = world_shift
+        self.ultimate_cost = {
+            PlayerType.LIGHT() : 50,
+            PlayerType.DARK() : 25,
+        }
     
     def loadSound(self):
         self.SFX = {
@@ -192,7 +202,12 @@ class Player(pg.sprite.Sprite):
             self.SFX[SFXType.TRANSFORMATION()].play()
             self.transform()
         
-        if keys[pg.K_x] and self.on_ground and not self.is_transforming and self.can_transform and not self.type == PlayerType.DARK():
+        if keys[pg.K_z] and not self.is_transforming and not self.is_ultimate:
+            if self.type == PlayerType.DARK():
+                self.ultimate()
+            elif self.type == PlayerType.LIGHT() and self.on_ground:
+                self.ultimate()
+        if keys[pg.K_x] and self.on_ground and not self.is_transforming and self.can_transform:
             self.SFX[SFXType.TRANSFORMATION()].play()
             self.transform()
         if keys[pg.K_c] and not self.is_attacking and self.on_ground and not self.is_transforming:
@@ -270,7 +285,7 @@ class Player(pg.sprite.Sprite):
     def get_damage(self):
         if not self.is_invincible:
             self.SFX[SFXType.HIT()].play()
-            self.update_health(-10)
+            self.update_health(-1)
             self.is_invincible = True
             self.hurt_time = pg.time.get_ticks()
 
@@ -285,7 +300,17 @@ class Player(pg.sprite.Sprite):
         if value >= 0 : return 255
         else: return 0
     
-    
+    def ultimate(self):
+        if self.current_energy < self.ultimate_cost[self.type]:
+            return
+        self.is_ultimate = True
+        self.update_energy(-self.ultimate_cost[self.type])
+        self.current_energy += -self.ultimate_cost[self.type]
+        if self.type == PlayerType.LIGHT():
+            ultimate = Ultimate(self.rect.midbottom, self.type, self, 4, 0.35, (0, 63))
+        else:
+            ultimate = Ultimate(self.rect.midbottom, self.type, self, 2, 0.5, (0, 5), 3, 15)
+        self.VFX_sprites.add(ultimate)
     
     def update(self, delta_time):
         self.countdownAttackBuffer(delta_time)
@@ -309,3 +334,5 @@ class Player(pg.sprite.Sprite):
         if self.is_transforming:
             self.particle.update(self.rect, self)
             self.particle.draw(self.display_surf)
+        self.VFX_sprites.update(self.worldShift())
+        self.VFX_sprites.draw(self.display_surf)

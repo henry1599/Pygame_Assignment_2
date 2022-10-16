@@ -10,6 +10,7 @@ import time
 from rain import *
 from light import *
 from audio import *
+from meteor import *
 
 # rain setup
 
@@ -25,6 +26,8 @@ class Level:
         self.create_overworld = create_overworld
         self.current_level = current_level
         level_data = levels[self.current_level]
+        self.coins_required = level_data['coins']
+        self.current_coins = 0
         self.new_max_level = level_data[LevelProperties.UNLOCK()]
         
         self.old_time = time.time()
@@ -55,9 +58,15 @@ class Level:
         constraints_layout = readCSVLayout(level_data[LevelType.CONSTRAINTS()])
         self.constraints_sprites = self.createTileGroup(constraints_layout, LevelType.CONSTRAINTS())
         
-        self.back_sprites = self.createBackgroundImage(BACK_PATH)
-        self.front_sprites = self.createBackgroundImage(FRONT_PATH)
-        self.background_sprites = self.createBackgroundImage(BACKGROUND_PATH)
+        if self.current_level != 2:
+            self.back_sprites = self.createBackgroundImage(BACK_PATH)
+            self.front_sprites = self.createBackgroundImage(FRONT_PATH)
+            self.background_sprites = self.createBackgroundImage(BACKGROUND_PATH)
+        else:
+            self.back_sprites = None
+            self.front_sprites = None
+            self.background_sprites = self.createBackgroundImage(BACKGROUND_BOSS_PATH)
+            
         
         level_width = len(terrain_layout[0]) * tile_size
         self.water = Water(screen_height - 20, level_width)
@@ -67,6 +76,13 @@ class Level:
         self.rains = Rains(
             screen = surface,
             amount = 200
+        )
+        
+        self.meteors = Meteors(
+            screen = surface,
+            amount = 10,
+            scale = random.randint(1, 3),
+            anim_speed = 0.45
         )
         
         self.loadSound()
@@ -88,7 +104,7 @@ class Level:
                 x = col_idx * tile_size
                 y = row_idx * tile_size
                 if value == '0':
-                    sprite = Player((x, y), self.display_surface, update_health, self.update_light, update_energy)
+                    sprite = Player((x, y), self.display_surface, update_health, self.update_light, update_energy, self.getWorldShift)
                     self.player.add(sprite)
                     self.light.player = self.player
         
@@ -212,12 +228,15 @@ class Level:
             val.stop()
     
     def check_win(self):
-        pass
+        if self.current_coins == self.coins_required:
+            self.player.sprite.killallsounds()
+            self.create_overworld(self.current_level, self.new_max_level)
     
     def check_coin_collision(self):
         collided_coins = pg.sprite.spritecollide(self.player.sprite, self.coin_sprites, True)
         if collided_coins:
             for _ in collided_coins:
+                self.current_coins += 1
                 self.SFX[SFXType.COIN_COLLECT()].play()
                 self.update_coins(1)
     
@@ -247,8 +266,12 @@ class Level:
     def update_light(self, status):
         self.light.active(status)
     
+    def getWorldShift(self):
+        return self.world_shift
+    
     def run(self):
         self.check_death()
+        self.check_win()
         self.check_coin_collision()
         self.check_enemy_collision()
         
@@ -259,8 +282,9 @@ class Level:
         self.background_sprites.draw(self.display_surface)
         self.background_sprites.update(self.world_shift)
         
-        self.back_sprites.draw(self.display_surface)
-        self.back_sprites.update(self.world_shift)
+        if self.back_sprites is not None:
+            self.back_sprites.draw(self.display_surface)
+            self.back_sprites.update(self.world_shift)
         
         self.terrain_sprites.draw(self.display_surface)
         self.terrain_sprites.update(self.world_shift)
@@ -280,11 +304,13 @@ class Level:
         self.horizontal_movement_collision()
         self.vertical_movement_collision()
         
-        self.front_sprites.draw(self.display_surface)
-        self.front_sprites.update(self.world_shift)
+        if self.front_sprites is not None:
+            self.front_sprites.draw(self.display_surface)
+            self.front_sprites.update(self.world_shift)
         
         self.water.draw(self.display_surface,self.world_shift)
-        self.rains.update()
+        if self.current_level != 2:
+            self.rains.update(self.world_shift)
         self.light.update()
 
         self.scroll_horizontally()

@@ -73,6 +73,7 @@ TREE_AND_STUFF_PATH = '../_levels/png/BWForest/Trees_and_etc.png'
 BACK_PATH = '../_levels/level_data/back_tree.png'
 FRONT_PATH = '../_levels/level_data/front_tree.png'
 BACKGROUND_PATH = '../_levels/level_data/background_gold.png'
+BACKGROUND_BOSS_PATH = '../_levels/level_data/bg_hanger_dude.png'
 COIN_PATH = '../_levels/png/coin01.png'
 ICON_PATH = '../_assets/icon.png'
 

@@ -11,7 +11,7 @@ from audio import *
 
 class Game:
     def __init__(self):
-        self.max_level = 1
+        self.max_level = 2
         self.max_health = 100
         self.current_health = self.max_health
         self.max_energy = 100

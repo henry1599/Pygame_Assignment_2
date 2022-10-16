@@ -11,8 +11,8 @@ class Rains(pg.sprite.Sprite):
             rain = Rain()
             self.rain_group.add(rain)
     
-    def update(self):
-        self.rain_group.update()
+    def update(self, x_shift):
+        self.rain_group.update(x_shift)
         self.rain_group.draw(self.screen)
 
 class Rain(pg.sprite.Sprite):
@@ -26,8 +26,8 @@ class Rain(pg.sprite.Sprite):
         self.rect.x = random.randint(-100, screen_width + 100)
         self.rect.y = random.randint(-screen_height, -5)
 
-    def update(self):
-        
+    def update(self, x_shift):
+        self.rect.x += x_shift
         if self.rect.bottom > screen_height:
             self.speedx = -5
             self.speedy = random.randint(20,30)
