@@ -4,7 +4,7 @@ from helper import *
 import random
 
 class Enemy(pg.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, is_boss = False):
         super().__init__()
         self.getAsset()
         self.frame_idx = 0
@@ -38,7 +38,7 @@ class Enemy(pg.sprite.Sprite):
         self.image = animation
         self.image = pg.transform.scale(self.image, (65, 55)).convert_alpha()
     
-    def update(self, offset):
+    def update(self, offset, is_boss = False):
         self.animate()
         self.flip()
         self.move()

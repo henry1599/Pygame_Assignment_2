@@ -19,7 +19,8 @@ class Ultimate(pg.sprite.Sprite):
         self.direction = 1 if self.player.facing_right else -1
         self.shoot_interval = shoot_interval
         self.shoot_interval_value = self.shoot_interval
-        if not self.player.facing_right:
+        self.facing_right = self.player.facing_right
+        if not self.facing_right:
             self.image = pg.transform.flip(self.image, True, False)
 
     def getAssets(self):
@@ -45,7 +46,7 @@ class Ultimate(pg.sprite.Sprite):
             self.image = self.VFX[int(self.frame_index)]
             self.image = pg.transform.scale(self.image, (self.image.get_size()[0] * self.scale, self.image.get_size()[1] * self.scale))
             if self.type == PlayerType.DARK():
-                if not self.player.facing_right:
+                if not self.facing_right:
                     self.image = pg.transform.flip(self.image, True, False)
 
         

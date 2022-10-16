@@ -11,6 +11,7 @@ from rain import *
 from light import *
 from audio import *
 from meteor import *
+from boss import *
 
 # rain setup
 
@@ -20,6 +21,7 @@ class Level:
     def __init__(self, current_level, surface, create_overworld, update_coins, update_health, update_energy):
         self.display_surface = surface 
         self.world_shift = 0
+        self.current_shift = 0
         
         self.update_coins = update_coins
         
@@ -46,6 +48,9 @@ class Level:
         self.goal = pg.sprite.GroupSingle()
         self.player_setup(player_layout, update_health, update_energy)
         
+        self.boss = pg.sprite.GroupSingle()
+        self.boss_setup()
+        
         terrain_layout = readCSVLayout(level_data[LevelType.TERRAIN()])
         self.terrain_sprites = self.createTileGroup(terrain_layout, LevelType.TERRAIN())
 
@@ -69,7 +74,7 @@ class Level:
             
         
         level_width = len(terrain_layout[0]) * tile_size
-        self.water = Water(screen_height - 20, level_width)
+        self.water = Water(screen_height - 20, level_width, self.current_level == 2)
         
         self.explosion_sprites = pg.sprite.Group()
         
@@ -98,6 +103,10 @@ class Level:
         self.SFX[SFXType.COIN_COLLECT()].set_volume(0.5)
         self.SFX[SFXType.ENEMY_DIE()].set_volume(0.5)
     
+    def boss_setup(self):
+        sprite = Boss()
+        self.boss.add(sprite)
+    
     def player_setup(self, layout, update_health, update_energy):
         for row_idx, row in enumerate(layout):
             for col_idx, value in enumerate(row):
@@ -110,7 +119,7 @@ class Level:
         
     def createBackgroundImage(self, path):
         sprite_group = pg.sprite.Group()
-        sprite = StaticPng(path)
+        sprite = StaticPng(path, self.current_level == 2)
         sprite_group.add(sprite)
         
         return sprite_group
@@ -127,16 +136,16 @@ class Level:
                     if type == LevelType.TERRAIN():
                         terrain_tile_list = readCutGraphics(TERRAIN_TILESET_PATH)
                         tile_surface = terrain_tile_list[int(value)]
-                        sprite = StaticTile(tile_size, x, y, tile_surface)
+                        sprite = StaticTile(tile_size, x, y, tile_surface, self.current_level == 2)
                     
                     if type == LevelType.COLLECTIBLE():
-                        sprite = Collectible(COIN_PATH, x, y)
+                        sprite = Collectible(COIN_PATH, x, y, self.current_level == 2)
                     
                     if type == LevelType.ENEMY():
-                        sprite = Enemy(x, y)
+                        sprite = Enemy(x, y, self.current_level == 2)
                     
                     if type == LevelType.CONSTRAINTS():
-                        sprite = Tile(tile_size, x, y)
+                        sprite = Tile(tile_size, x, y, self.current_level == 2)
                         
                     sprite_group.add(sprite)
         
@@ -280,24 +289,28 @@ class Level:
         self.old_time = now
         
         self.background_sprites.draw(self.display_surface)
-        self.background_sprites.update(self.world_shift)
+        self.background_sprites.update(self.world_shift, self.current_level == 2)
         
         if self.back_sprites is not None:
             self.back_sprites.draw(self.display_surface)
-            self.back_sprites.update(self.world_shift)
+            self.back_sprites.update(self.world_shift, self.current_level == 2)
         
         self.terrain_sprites.draw(self.display_surface)
-        self.terrain_sprites.update(self.world_shift)
+        self.terrain_sprites.update(self.world_shift, self.current_level == 2)
         
         self.coin_sprites.draw(self.display_surface)
-        self.coin_sprites.update(self.world_shift)
+        self.coin_sprites.update(self.world_shift, self.current_level == 2)
         
-        self.enemy_sprites.update(self.world_shift)
-        self.constraints_sprites.update(self.world_shift)
+        self.enemy_sprites.update(self.world_shift, self.current_level == 2)
+        self.constraints_sprites.update(self.world_shift, self.current_level == 2)
         self.collision_enemy_reverse()
         self.enemy_sprites.draw(self.display_surface)
         self.explosion_sprites.update(self.world_shift)
         self.explosion_sprites.draw(self.display_surface)
+        
+        if self.current_level == 2:
+            self.boss.update(self.delta_time)
+            self.boss.draw(self.display_surface)
         
         self.player.update(self.delta_time)
         self.player.draw(self.display_surface)
@@ -306,13 +319,14 @@ class Level:
         
         if self.front_sprites is not None:
             self.front_sprites.draw(self.display_surface)
-            self.front_sprites.update(self.world_shift)
+            self.front_sprites.update(self.world_shift, self.current_level == 2)
         
         self.water.draw(self.display_surface,self.world_shift)
         if self.current_level != 2:
             self.rains.update(self.world_shift)
         self.light.update()
 
-        self.scroll_horizontally()
+        if self.current_level != 2:
+            self.scroll_horizontally()
         
         

@@ -57,6 +57,10 @@ class State:
     def ATTACK03(): return 'attack3'
     @staticmethod
     def TRANSFORM(): return 'transform'
+    @staticmethod
+    def AWAKE() : return 'awake'
+    @staticmethod
+    def LIE_STATIC() : return 'lying'
 vertical_tile_number = 11
 tile_size = 64
 tile_real_size = 16
@@ -93,6 +97,105 @@ particle_transform_sizes = {
 particle_anim_transform_speed = {
     PlayerType.LIGHT() : particle_anim_speed_light2dark,
     PlayerType.DARK() : particle_anim_speed_dark2light
+}
+
+boss_init_position = (-50, 160)
+
+# facing = -1 : left, 1 : right
+boss_attack_state = {
+    'attack 1' : 
+    [
+        {
+            'position' : (350, 200),
+            'facing' : 1,
+            'attack' : True,
+            'time' : 3000
+        },
+        {
+            'position' : (900, 350),
+            'facing' : -1,
+            'attack' : False,
+            'time' : 3000
+        },
+        {
+            'position' : (350, 450),
+            'facing' : 1,
+            'attack' : True,
+            'time' : 3000
+        }
+    ],
+    'attack 2' : 
+    [
+        {
+            'position' : (900, 200),
+            'facing' : -1,
+            'attack' : False,
+            'time' : 3000
+        },
+        {
+            'position' : (350, 350),
+            'facing' : 1,
+            'attack' : True,
+            'time' : 3000
+        },
+        {
+            'position' : (900, 450),
+            'facing' : -1,
+            'attack' : True,
+            'time' : 3000
+        }
+    ],
+    'attack 3' : 
+    [
+        {
+            'position' : (900, 200),
+            'facing' : -1,
+            'attack' : True,
+            'time' : 3000
+        },
+        {
+            'position' : (350, 350),
+            'facing' : 1,
+            'attack' : False,
+            'time' : 3000
+        },
+        {
+            'position' : (350, 450),
+            'facing' : 1,
+            'attack' : False,
+            'time' : 3000
+        }
+    ]
+}
+
+boss_pivot_top = (screen_width / 2, screen_height / 3)
+boss_scale = 5
+boss_anim_loop = {
+    State.IDLE() : True,
+    State.AWAKE() : False,
+    State.RUN() : True,
+    State.LIE_STATIC() : True,
+    State.ATTACK01() : False,
+    State.ATTACK02() : False,
+    State.ATTACK03() : False
+}
+boss_sizes = {
+    State.IDLE() : (201, 94),
+    State.AWAKE() : (201, 94),
+    State.RUN() : (201, 94),
+    State.LIE_STATIC() : (201, 94),
+    State.ATTACK01() : (201, 94),
+    State.ATTACK02() : (201, 94),
+    State.ATTACK03() : (201, 94)
+}
+boss_anim_speed = {
+    State.IDLE() : 0.25,
+    State.AWAKE() : 0.2,
+    State.RUN() : 0.25,
+    State.LIE_STATIC() : 0.25,
+    State.ATTACK01() : 0.25,
+    State.ATTACK02() : 0.25,
+    State.ATTACK03() : 0.25
 }
 
 player_scale = 2.5
