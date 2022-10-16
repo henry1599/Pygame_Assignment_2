@@ -48,7 +48,7 @@ class Player(pg.sprite.Sprite):
         self.particle.add(particle)
         
         self.is_invincible = False
-        self.invinciblity_duration = 750
+        self.invinciblity_duration = 1250
         self.hurt_time = 0
         
         self.loadSound()
@@ -59,7 +59,7 @@ class Player(pg.sprite.Sprite):
         self.max_energy = 100
         self.can_transform = False
         
-        self.increase_factor = 0.3
+        self.increase_factor = 1
         self.decrease_factor = -0.01
         
         self.VFX_sprites = pg.sprite.Group()
@@ -282,10 +282,10 @@ class Player(pg.sprite.Sprite):
         self.attack_idx += 1
         self.attack_idx %= len(self.attack_states)
 
-    def get_damage(self):
+    def get_damage(self, damage = -1):
         if not self.is_invincible:
             self.SFX[SFXType.HIT()].play()
-            self.update_health(-1)
+            self.update_health(damage)
             self.is_invincible = True
             self.hurt_time = pg.time.get_ticks()
 

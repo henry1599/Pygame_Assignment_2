@@ -56,14 +56,16 @@ class VFX_Transform(pg.sprite.Sprite):
         self.animate()
         
 class ParticleEffect(pg.sprite.Sprite):
-    def __init__(self, pos, type):
+    def __init__(self, pos, type, scale = 3):
         super().__init__()
         self.frame_index = 0
         self.animation_speed = 0.5
         if type == 'explosion':
             self.frames = readFolder('../_assets/explosion')
+        if type == 'electric':
+            self.frames = readFolder('../_assets/boss/melee_particle')
         self.image = self.frames[self.frame_index]
-        self.image = pg.transform.scale(self.image, (self.image.get_size()[0] * 3, self.image.get_size()[1] * 3))
+        self.image = pg.transform.scale(self.image, (self.image.get_size()[0] * scale, self.image.get_size()[1] * scale))
         self.rect = self.image.get_rect(center = pos)
 
     def animate(self):
@@ -74,6 +76,6 @@ class ParticleEffect(pg.sprite.Sprite):
             self.image = self.frames[int(self.frame_index)]
             self.image = pg.transform.scale(self.image, (self.image.get_size()[0] * 3, self.image.get_size()[1] * 3))
 
-    def update(self,x_shift):
+    def update(self, x_shift):
         self.animate()
         self.rect.x += x_shift

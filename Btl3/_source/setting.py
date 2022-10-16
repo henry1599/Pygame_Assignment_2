@@ -61,6 +61,8 @@ class State:
     def AWAKE() : return 'awake'
     @staticmethod
     def LIE_STATIC() : return 'lying'
+    @staticmethod
+    def NOT_ATTACK() : return 'not_attack'
 vertical_tile_number = 11
 tile_size = 64
 tile_real_size = 16
@@ -106,19 +108,19 @@ boss_attack_state = {
     'attack 1' : 
     [
         {
-            'position' : (350, 200),
+            'position' : (350, 400),
             'facing' : 1,
             'attack' : True,
             'time' : 3000
         },
         {
-            'position' : (900, 350),
+            'position' : (900, 400),
             'facing' : -1,
-            'attack' : False,
+            'attack' : True,
             'time' : 3000
         },
         {
-            'position' : (350, 450),
+            'position' : (350, 400),
             'facing' : 1,
             'attack' : True,
             'time' : 3000
@@ -127,42 +129,63 @@ boss_attack_state = {
     'attack 2' : 
     [
         {
-            'position' : (900, 200),
+            'position' : (900, 400),
             'facing' : -1,
-            'attack' : False,
-            'time' : 3000
+            'attack' : True,
+            'time' : 5000
         },
         {
-            'position' : (350, 350),
+            'position' : (350, 400),
             'facing' : 1,
             'attack' : True,
-            'time' : 3000
+            'time' : 5000
         },
         {
-            'position' : (900, 450),
+            'position' : (900, 400),
             'facing' : -1,
             'attack' : True,
-            'time' : 3000
+            'time' : 5000
         }
     ],
     'attack 3' : 
     [
         {
-            'position' : (900, 200),
+            'position' : (900, 400),
+            'facing' : -1,
+            'attack' : True,
+            'time' : 10000
+        },
+        {
+            'position' : (350, 400),
+            'facing' : 1,
+            'attack' : True,
+            'time' : 10000
+        },
+        {
+            'position' : (350, 400),
+            'facing' : 1,
+            'attack' : True,
+            'time' : 10000
+        }
+    ],
+    'attack 4' : 
+    [
+        {
+            'position' : (625, 400),
             'facing' : -1,
             'attack' : True,
             'time' : 3000
         },
         {
-            'position' : (350, 350),
+            'position' : (625, 400),
             'facing' : 1,
-            'attack' : False,
+            'attack' : True,
             'time' : 3000
         },
         {
-            'position' : (350, 450),
+            'position' : (625, 400),
             'facing' : 1,
-            'attack' : False,
+            'attack' : True,
             'time' : 3000
         }
     ]
@@ -177,7 +200,8 @@ boss_anim_loop = {
     State.LIE_STATIC() : True,
     State.ATTACK01() : False,
     State.ATTACK02() : False,
-    State.ATTACK03() : False
+    State.ATTACK03() : False,
+    State.NOT_ATTACK() : False
 }
 boss_sizes = {
     State.IDLE() : (201, 94),
@@ -186,7 +210,8 @@ boss_sizes = {
     State.LIE_STATIC() : (201, 94),
     State.ATTACK01() : (201, 94),
     State.ATTACK02() : (201, 94),
-    State.ATTACK03() : (201, 94)
+    State.ATTACK03() : (201, 94),
+    State.NOT_ATTACK() : (201, 94)
 }
 boss_anim_speed = {
     State.IDLE() : 0.25,
@@ -195,7 +220,8 @@ boss_anim_speed = {
     State.LIE_STATIC() : 0.25,
     State.ATTACK01() : 0.25,
     State.ATTACK02() : 0.25,
-    State.ATTACK03() : 0.25
+    State.ATTACK03() : 0.25,
+    State.NOT_ATTACK() : 0.25
 }
 
 player_scale = 2.5

@@ -48,6 +48,7 @@ class Level:
         self.goal = pg.sprite.GroupSingle()
         self.player_setup(player_layout, update_health, update_energy)
         
+        self.boss_attack = pg.sprite.GroupSingle()
         self.boss = pg.sprite.GroupSingle()
         self.boss_setup()
         
@@ -104,8 +105,10 @@ class Level:
         self.SFX[SFXType.ENEMY_DIE()].set_volume(0.5)
     
     def boss_setup(self):
-        sprite = Boss()
+        sprite = Boss(self.player.sprite)
+        attack_sprite = AttackField(sprite, self.player.sprite)
         self.boss.add(sprite)
+        self.boss_attack.add(attack_sprite)
     
     def player_setup(self, layout, update_health, update_energy):
         for row_idx, row in enumerate(layout):
@@ -308,7 +311,9 @@ class Level:
         self.explosion_sprites.update(self.world_shift)
         self.explosion_sprites.draw(self.display_surface)
         
+        
         if self.current_level == 2:
+            self.boss_attack.update()
             self.boss.update(self.delta_time)
             self.boss.draw(self.display_surface)
         
@@ -324,7 +329,7 @@ class Level:
         self.water.draw(self.display_surface,self.world_shift)
         if self.current_level != 2:
             self.rains.update(self.world_shift)
-        self.light.update()
+            self.light.update()
 
         if self.current_level != 2:
             self.scroll_horizontally()
