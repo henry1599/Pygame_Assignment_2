@@ -1,4 +1,5 @@
 import pygame as pg
+from setting import *
 
 class UI:
     def __init__(self, surface):
@@ -11,6 +12,12 @@ class UI:
         self.bar_max_width = 248
         self.bar_height = 24
         
+        self.health_bar_boss = pg.image.load('../_assets/UI/health_bar01.png').convert_alpha()
+        self.health_bar_boss_scale = 5
+        self.health_bar_boss = pg.transform.scale(self.health_bar_boss, (self.health_bar_boss.get_size()[0] * self.health_bar_boss_scale, self.health_bar_boss.get_size()[1] * 2))
+        self.health_bar_boss_topright = (screen_width - 650, 24)
+        self.boss_bar_max_width = 620
+        self.bar_height = 24
         
         self.energy_bar = pg.image.load('../_assets/UI/health_bar01.png').convert_alpha()
         energy_bar_scale = 2
@@ -25,6 +32,13 @@ class UI:
 
         self.font = pg.font.Font('../_assets/UI/ARCADEPI.ttf', 30)
 
+    def show_boss_health(self, current_health, max_health):
+        self.display_surface.blit(self.health_bar_boss, (screen_width - 660, 20))
+        current_health_ratio = current_health / max_health
+        current_bar_width = self.boss_bar_max_width * current_health_ratio
+        health_bar_rect = pg.Rect(self.health_bar_boss_topright, (current_bar_width, self.bar_height))
+        pg.draw.rect(self.display_surface, 'red', health_bar_rect)
+    
     def show_health(self, current_health, max_health):
         self.display_surface.blit(self.health_bar, (20, 20))
         current_health_ratio = current_health / max_health

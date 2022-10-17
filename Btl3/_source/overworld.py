@@ -95,7 +95,15 @@ class Overworld:
     
     def get_movement_data(self, move_factor):
         start = pg.math.Vector2(self.nodes.sprites()[self.current_level].rect.center)
-        end = pg.math.Vector2(self.nodes.sprites()[self.current_level + move_factor].rect.center)
+        idx = self.current_level + move_factor 
+        if idx > len(self.nodes.sprites()) - 1:
+            idx = len(self.nodes.sprites()) - 1
+        if idx < 0:
+            idx = 0
+        end = pg.math.Vector2(self.nodes.sprites()[idx].rect.center)
+        vec = end - start
+        if vec.length() == 0:
+            return vec
         return (end - start).normalize()
     
     def update_icon_position(self):

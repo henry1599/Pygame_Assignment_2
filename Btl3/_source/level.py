@@ -18,12 +18,13 @@ from boss import *
 # light
 
 class Level:
-    def __init__(self, current_level, surface, create_overworld, update_coins, update_health, update_energy):
+    def __init__(self, current_level, surface, create_overworld, update_coins, update_health, update_energy, update_boss_health):
         self.display_surface = surface 
         self.world_shift = 0
         self.current_shift = 0
         
         self.update_coins = update_coins
+        self.update_boss_health = update_boss_health
         
         self.create_overworld = create_overworld
         self.current_level = current_level
@@ -48,7 +49,7 @@ class Level:
         self.goal = pg.sprite.GroupSingle()
         self.player_setup(player_layout, update_health, update_energy)
         
-        self.boss_attack = pg.sprite.GroupSingle()
+        self.boss_attack = pg.sprite.Group()
         self.boss = pg.sprite.GroupSingle()
         self.boss_setup()
         
@@ -105,10 +106,12 @@ class Level:
         self.SFX[SFXType.ENEMY_DIE()].set_volume(0.5)
     
     def boss_setup(self):
-        sprite = Boss(self.player.sprite)
+        sprite = Boss(self.player.sprite, self.update_boss_health)
         attack_sprite = AttackField(sprite, self.player.sprite)
+        melee_sprite = MeleeAttackField(sprite, self.player.sprite)
         self.boss.add(sprite)
         self.boss_attack.add(attack_sprite)
+        self.boss_attack.add(melee_sprite)
     
     def player_setup(self, layout, update_health, update_energy):
         for row_idx, row in enumerate(layout):
@@ -145,7 +148,7 @@ class Level:
                         sprite = Collectible(COIN_PATH, x, y, self.current_level == 2)
                     
                     if type == LevelType.ENEMY():
-                        sprite = Enemy(x, y, self.current_level == 2)
+                        sprite = Enemy(x, y, self.current_level == 2, self.player.sprite, self.play_enemy_vfx)
                     
                     if type == LevelType.CONSTRAINTS():
                         sprite = Tile(tile_size, x, y, self.current_level == 2)
@@ -240,9 +243,14 @@ class Level:
             val.stop()
     
     def check_win(self):
-        if self.current_coins == self.coins_required:
-            self.player.sprite.killallsounds()
-            self.create_overworld(self.current_level, self.new_max_level)
+        if self.current_level != 2:
+            if self.current_coins == self.coins_required:
+                self.player.sprite.killallsounds()
+                self.create_overworld(self.current_level, self.new_max_level)
+        else:
+            if self.boss.sprite.is_end_death:
+                self.player.sprite.killallsounds()
+                self.create_overworld(self.current_level, self.new_max_level)
     
     def check_coin_collision(self):
         collided_coins = pg.sprite.spritecollide(self.player.sprite, self.coin_sprites, True)
@@ -251,6 +259,11 @@ class Level:
                 self.current_coins += 1
                 self.SFX[SFXType.COIN_COLLECT()].play()
                 self.update_coins(1)
+    
+    def play_enemy_vfx(self, enemy):
+        explosion_sprite = ParticleEffect(enemy.rect.center, 'explosion')
+        self.explosion_sprites.add(explosion_sprite)
+        self.SFX[SFXType.ENEMY_DIE()].play()
     
     def check_enemy_collision(self):
         enemy_collisions = pg.sprite.spritecollide(self.player.sprite, self.enemy_sprites, False)
@@ -268,9 +281,7 @@ class Level:
                     enemy.kill()
                 else:
                     if self.player.sprite.is_attacking:
-                        explosion_sprite = ParticleEffect(enemy.rect.center, 'explosion')
-                        self.explosion_sprites.add(explosion_sprite)
-                        self.SFX[SFXType.ENEMY_DIE()].play()
+                        self.play_enemy_vfx(enemy)
                         enemy.kill()
                     else:
                         self.player.sprite.get_damage()
@@ -316,6 +327,7 @@ class Level:
             self.boss_attack.update()
             self.boss.update(self.delta_time)
             self.boss.draw(self.display_surface)
+            # self.boss_attack.draw(self.display_surface)
         
         self.player.update(self.delta_time)
         self.player.draw(self.display_surface)

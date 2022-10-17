@@ -63,6 +63,8 @@ class State:
     def LIE_STATIC() : return 'lying'
     @staticmethod
     def NOT_ATTACK() : return 'not_attack'
+    @staticmethod
+    def DIE() : return 'die'
 vertical_tile_number = 11
 tile_size = 64
 tile_real_size = 16
@@ -174,19 +176,19 @@ boss_attack_state = {
             'position' : (625, 400),
             'facing' : -1,
             'attack' : True,
-            'time' : 3000
+            'time' : 5000
         },
         {
             'position' : (625, 400),
             'facing' : 1,
             'attack' : True,
-            'time' : 3000
+            'time' : 5000
         },
         {
             'position' : (625, 400),
             'facing' : 1,
             'attack' : True,
-            'time' : 3000
+            'time' : 5000
         }
     ]
 }
@@ -201,7 +203,8 @@ boss_anim_loop = {
     State.ATTACK01() : False,
     State.ATTACK02() : False,
     State.ATTACK03() : False,
-    State.NOT_ATTACK() : False
+    State.NOT_ATTACK() : False,
+    State.DIE() : False
 }
 boss_sizes = {
     State.IDLE() : (201, 94),
@@ -211,7 +214,8 @@ boss_sizes = {
     State.ATTACK01() : (201, 94),
     State.ATTACK02() : (201, 94),
     State.ATTACK03() : (201, 94),
-    State.NOT_ATTACK() : (201, 94)
+    State.NOT_ATTACK() : (201, 94),
+    State.DIE() : (201, 94)
 }
 boss_anim_speed = {
     State.IDLE() : 0.25,
@@ -221,7 +225,8 @@ boss_anim_speed = {
     State.ATTACK01() : 0.25,
     State.ATTACK02() : 0.25,
     State.ATTACK03() : 0.25,
-    State.NOT_ATTACK() : 0.25
+    State.NOT_ATTACK() : 0.25,
+    State.DIE() : 0.5
 }
 
 player_scale = 2.5

@@ -17,6 +17,8 @@ class Game:
         self.max_energy = 100
         self.current_energy = 0
         self.coins = 0
+        self.max_boss_health = 1000
+        self.current_boss_health = 1000
         
         self.ui = UI(screen)
         
@@ -28,6 +30,8 @@ class Game:
         self.SFX[SFXType.OVERWORLD_THEME()].playloop()
         self.SFX[SFXType.LEVEL_THEME()].stop()
         self.SFX[SFXType.RAIN()].stop()
+        
+        self.current_level = 0
     
     def loadSound(self):
         self.SFX = {
@@ -53,7 +57,8 @@ class Game:
         self.SFX[SFXType.RAIN()].stop()
     
     def create_level(self, current_level):
-        self.level = Level(current_level, screen, self.create_overworld, self.update_coins, self.update_health, self.update_energy)
+        self.current_level = current_level
+        self.level = Level(current_level, screen, self.create_overworld, self.update_coins, self.update_health, self.update_energy, self.update_boss_health)
         self.status = GameState.LEVEL()
         self.SFX[SFXType.OVERWORLD_THEME()].stop()
         self.SFX[SFXType.LEVEL_THEME()].playloop()
@@ -61,6 +66,13 @@ class Game:
     
     def update_coins(self, amount):
         self.coins += amount
+    
+    def update_boss_health(self, amount):
+        self.current_boss_health += amount
+        if self.current_boss_health >= self.max_boss_health:
+            self.current_boss_health = self.max_boss_health
+        if self.current_boss_health <= 0:
+            self.current_boss_health = 0
     
     def update_health(self, amount):
         self.current_health += amount
@@ -92,6 +104,8 @@ class Game:
             self.level.run()
             self.ui.show_health(self.current_health, self.max_health)
             self.ui.show_energy(self.current_energy, self.max_energy)
+            if self.current_level == 2:
+                self.ui.show_boss_health(self.current_boss_health, self.max_boss_health)
             self.ui.show_coin(self.coins)
             self.check_game_over()
 
