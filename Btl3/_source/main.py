@@ -114,19 +114,54 @@ class Game:
             self.ui.show_coin(self.coins)
             self.check_game_over()
 
+class Menu:
+    def __init__(self):
+        self.is_start = False
+        self.is_quit = False
+        
+        self.background = pg.image.load(HOME_SCREEN_PATH).convert_alpha()
+        self.background = pg.transform.scale(self.background, (screen_width, screen_height))
+        self.rect = self.background.get_rect(topleft = (0, 0))
+        
+        self.start_button = pg.image.load('../_assets/boss/field_of_attack/rect.png')
+        self.quit_button = pg.image.load('../_assets/boss/field_of_attack/rect.png')
+        self.start_button = pg.transform.scale(self.start_button, (150, 60))
+        self.quit_button = pg.transform.scale(self.quit_button, (150, 60))
+        
+        self.start_rect = self.start_button.get_rect(topleft = (850, 530))
+        self.quit_rect = self.quit_button.get_rect(topleft = (850, 610))
+    
+    def gatherInput(self, mouse_pos):
+        if self.start_rect.collidepoint(mouse_pos):
+            self.is_start = True
+        if self.quit_rect.collidepoint(mouse_pos):
+            self.is_quit = True
+    
+    def run(self):
+        screen.blit(self.background, self.rect)
+
 pg.init()
 screen = pg.display.set_mode((screen_width, screen_height))
 clock = pg.time.Clock()
+home = Menu()
 game = Game()
 
-while True:
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
-            pg.quit() 
-            sys.exit()
-    
-    screen.fill('black')
-    game.run()
-    
-    pg.display.update()
-    clock.tick(60)
+if __name__ == '__main__':
+    while True:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit() 
+                sys.exit()
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                home.gatherInput(event.pos)
+                
+        screen.fill('black')
+        if home.is_quit:
+            pg.quit()
+        if home.is_start:
+            game.run()
+        else:
+            home.run()
+        
+        pg.display.update()
+        clock.tick(60)

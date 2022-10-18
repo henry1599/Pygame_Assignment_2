@@ -103,6 +103,8 @@ BACKGROUND_BOSS_PATH = '../_levels/level_data/bg_hanger_dude.png'
 COIN_PATH = '../_levels/png/coin01.png'
 ICON_PATH = '../_assets/icon.png'
 
+HOME_SCREEN_PATH = '../_assets/Home/Homescene.png'
+
 
 particle_scale = 2.5
 

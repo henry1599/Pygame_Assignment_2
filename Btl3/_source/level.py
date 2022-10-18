@@ -261,7 +261,7 @@ class Level:
         collided_coins = pg.sprite.spritecollide(self.player.sprite, self.star_sprite, True)
         if collided_coins:
             self.player.sprite.killallsounds()
-            self.create_overworld(self.current_level, self.new_max_level)
+            self.create_overworld(self.current_level, self.current_level + 1 if self.current_level + 1 <= 2 else 2)
     
     def check_coin_collision(self):
         collided_coins = pg.sprite.spritecollide(self.player.sprite, self.coin_sprites, True)
