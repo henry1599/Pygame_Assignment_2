@@ -1,6 +1,7 @@
 import pygame as pg
+from setting import *
 
-
+global_volume = 1
 class SFX:
     def __init__(self, path, volume = 1):
         self.sound = pg.mixer.Sound(path)
@@ -34,3 +35,7 @@ class SFX:
     
     def stop(self):
         self.sound.stop()
+    
+    def update(self):
+        print(global_volume)
+        self.sound.set_volume(self.volume * global_volume)

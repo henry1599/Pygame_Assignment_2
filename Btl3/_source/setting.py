@@ -93,6 +93,7 @@ screen_width = 1280
 
 thunderstorm_color = (255, 255, 255, 255)
 
+GLOBAL_VOLUME = 1
 
 TERRAIN_TILESET_PATH = '../_levels/png/BWForest/Tileset.png'
 TREE_AND_STUFF_PATH = '../_levels/png/BWForest/Trees_and_etc.png'
@@ -104,6 +105,8 @@ COIN_PATH = '../_levels/png/coin01.png'
 ICON_PATH = '../_assets/icon.png'
 
 HOME_SCREEN_PATH = '../_assets/Home/Homescene.png'
+UNMUTE_PATH = '../_assets/UI/unmute.png'
+MUTE_PATH =  '../_assets/UI/mute.png'
 
 
 particle_scale = 2.5

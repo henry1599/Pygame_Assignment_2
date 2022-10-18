@@ -103,6 +103,8 @@ class Game:
             self.status = GameState.OVERWORLD()
     
     def run(self):
+        for s in self.SFX.values():
+            s.update()
         if self.status == GameState.OVERWORLD():
             self.overworld.run()
         else:
@@ -123,6 +125,18 @@ class Menu:
         self.background = pg.transform.scale(self.background, (screen_width, screen_height))
         self.rect = self.background.get_rect(topleft = (0, 0))
         
+        self.unmute_button = pg.image.load(UNMUTE_PATH).convert_alpha()
+        self.mute_button = pg.image.load(MUTE_PATH).convert_alpha()
+        
+        self.sound_timer_click = 1000
+        self.sound_clicked = False
+        self.sound_start_timer = 0
+        
+        self.sound_button = self.unmute_button
+        self.sound_button = pg.transform.scale(self.sound_button, (50, 50))
+        self.sound_rect = self.sound_button.get_rect(topright = (screen_width - 5, 5))
+        self.is_mute = False
+        
         self.start_button = pg.image.load('../_assets/boss/field_of_attack/rect.png')
         self.quit_button = pg.image.load('../_assets/boss/field_of_attack/rect.png')
         self.start_button = pg.transform.scale(self.start_button, (150, 60))
@@ -132,13 +146,32 @@ class Menu:
         self.quit_rect = self.quit_button.get_rect(topleft = (850, 610))
     
     def gatherInput(self, mouse_pos):
+        global global_volume
         if self.start_rect.collidepoint(mouse_pos):
             self.is_start = True
         if self.quit_rect.collidepoint(mouse_pos):
             self.is_quit = True
+        if self.sound_rect.collidepoint(mouse_pos):
+            if not self.sound_clicked:
+                self.sound_start_timer = pg.time.get_ticks()
+                self.is_mute = not self.is_mute
+                if self.is_mute:
+                    pg.mixer.pause()
+                else:
+                    pg.mixer.unpause()
+                self.sound_button = self.mute_button if self.is_mute else self.unmute_button
+                self.sound_button = pg.transform.scale(self.sound_button, (50, 50))
+    
+    def timerSoundButton(self):
+        if self.sound_clicked:
+            cur_time = pg.time.get_ticks()
+            if cur_time - self.sound_start_timer >= self.sound_timer_click:
+                self.sound_clicked = False
     
     def run(self):
+        self.timerSoundButton()
         screen.blit(self.background, self.rect)
+        screen.blit(self.sound_button, self.sound_rect)
 
 pg.init()
 screen = pg.display.set_mode((screen_width, screen_height))

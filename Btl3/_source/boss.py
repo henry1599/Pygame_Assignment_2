@@ -115,9 +115,6 @@ class Boss(pg.sprite.Sprite):
             # print(animation.value)
             full_path = path_Light + animation
             self.animations[animation] = readFolder(full_path)
-        
-        for value in self.animations.values():
-            print(len(value))
     
     def resetDealingDamage(self):
         self.is_dealing_melee_attack = False
@@ -265,6 +262,8 @@ class Boss(pg.sprite.Sprite):
         self.getCollide()
         self.invincibility_timer()
         self.sin_value()
+        for s in self.SFX.values():
+            s.update()
         
         if not self.is_death:
             if self.is_wakeup:
