@@ -80,6 +80,22 @@ class Boss(pg.sprite.Sprite):
         
         self.is_death = False
         self.is_end_death = False
+        
+        self.loadSound()
+    
+    def loadSound(self):
+        self.SFX = {
+            SFXType.BOSS_ATTACK01() : SFX('../_audio/boss_attack1_SFX.wav', 0.75),
+            SFXType.BOSS_ATTACK02() : SFX('../_audio/boss_attack2_sfx.wav', 0.75),
+            SFXType.BOSS_ATTACK03() : SFX('../_audio/boss_attack3_sfx.wav', 0.75),
+            SFXType.BOSS_PRE_ATTACK03() : SFX('../_audio/boss_preattack3_sfx.wav', 0.75),
+            SFXType.BOSS_DIE() : SFX('../_audio/boss_die.wav', 0.75),
+            SFXType.BOSS_AWAKE() : SFX('../_audio/boss_awake.wav', 0.75)
+        }
+    
+    def killallsounds(self):
+        for val in self.SFX.values():
+            val.stop()
     
     def getAssets(self):
         path_Light = '../_assets/boss/'
@@ -114,12 +130,20 @@ class Boss(pg.sprite.Sprite):
         animation = self.animations[self.state]
         self.frame_idx += boss_anim_speed[self.state]
         if self.state == State.ATTACK01():
+            if 11 - boss_anim_speed[self.state] <= self.frame_idx <= 11 + boss_anim_speed[self.state]:
+                self.SFX[SFXType.BOSS_ATTACK01()].play()
             if 11 <= self.frame_idx <= 16:
                 self.is_dealing_melee_attack = True
         if self.state == State.ATTACK02():
+            if 10 - boss_anim_speed[self.state] <= self.frame_idx <= 10 + boss_anim_speed[self.state]:
+                self.SFX[SFXType.BOSS_ATTACK02()].play()
             if 10 <= self.frame_idx < 12:
                 self.is_dealing_range_attack = True
         if self.state == State.ATTACK03():
+            if 6 - boss_anim_speed[self.state] <= self.frame_idx <= 6 + boss_anim_speed[self.state]:
+                self.SFX[SFXType.BOSS_PRE_ATTACK03()].play()
+            if 32 - boss_anim_speed[self.state] <= self.frame_idx <= 32 + boss_anim_speed[self.state]:
+                self.SFX[SFXType.BOSS_ATTACK03()].play()
             if 32 <= self.frame_idx < 35:
                 self.is_dealing_special_attack = True
         if self.frame_idx >= len(animation):
@@ -151,6 +175,7 @@ class Boss(pg.sprite.Sprite):
             self.image.set_alpha(255)
     
     def wakeup(self):
+        self.SFX[SFXType.BOSS_AWAKE()].play()
         self.state = State.AWAKE()
         self.frame_idx =  0
     
@@ -189,14 +214,14 @@ class Boss(pg.sprite.Sprite):
     
     def endattack(self):
         self.is_attacking = False
-        
+    
     def getCollide(self):
         collided_bullet = pg.sprite.spritecollide(self, self.player.VFX_sprites, False)
         if collided_bullet:
             if not self.is_invincible:
                 damage = -50
                 self.update_health(damage)
-                self.current_health -= damage
+                self.current_health += damage
                 if self.current_health <= 0:
                     self.death()
                 self.is_invincible = True
@@ -211,7 +236,7 @@ class Boss(pg.sprite.Sprite):
                     else:
                         damage = -20
                     self.update_health(damage)
-                    self.current_health -= damage
+                    self.current_health += damage
                     if self.current_health <= 0:
                         self.death()
                     self.is_invincible = True
@@ -223,6 +248,7 @@ class Boss(pg.sprite.Sprite):
         else: return 100
     
     def death(self):
+        self.SFX[SFXType.BOSS_DIE()].play()
         self.frame_idx = 0
         self.is_death = True
         self.state = State.DIE()

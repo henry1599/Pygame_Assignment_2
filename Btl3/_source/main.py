@@ -37,7 +37,8 @@ class Game:
         self.SFX = {
             SFXType.OVERWORLD_THEME() : SFX('../_audio/overworld_theme.wav', 0.5),
             SFXType.LEVEL_THEME() : SFX('../_audio/normal_level_theme.wav', 0.35),
-            SFXType.RAIN() : SFX('../_audio/rain.wav', 0.25)
+            SFXType.RAIN() : SFX('../_audio/rain.wav', 0.25),
+            SFXType.BOSS_THEME() : SFX('../_audio/boss_theme.wav', 0.5)
         }
     
     def create_overworld(self, current_level, new_max_level):
@@ -55,14 +56,18 @@ class Game:
         self.SFX[SFXType.OVERWORLD_THEME()].playloop()
         self.SFX[SFXType.LEVEL_THEME()].stop()
         self.SFX[SFXType.RAIN()].stop()
+        self.SFX[SFXType.BOSS_THEME()].stop()
     
     def create_level(self, current_level):
         self.current_level = current_level
         self.level = Level(current_level, screen, self.create_overworld, self.update_coins, self.update_health, self.update_energy, self.update_boss_health)
         self.status = GameState.LEVEL()
         self.SFX[SFXType.OVERWORLD_THEME()].stop()
-        self.SFX[SFXType.LEVEL_THEME()].playloop()
-        self.SFX[SFXType.RAIN()].playloop()
+        if current_level == 2:
+            self.SFX[SFXType.BOSS_THEME()].playloop()
+        else:
+            self.SFX[SFXType.LEVEL_THEME()].playloop()
+            self.SFX[SFXType.RAIN()].playloop()
     
     def update_coins(self, amount):
         self.coins += amount

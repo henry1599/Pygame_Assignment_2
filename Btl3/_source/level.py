@@ -54,16 +54,17 @@ class Level:
         self.boss_setup()
         
         terrain_layout = readCSVLayout(level_data[LevelType.TERRAIN()])
-        self.terrain_sprites = self.createTileGroup(terrain_layout, LevelType.TERRAIN())
+        self.terrain_sprites = self.createTileGroup(terrain_layout, LevelType.TERRAIN())[0]
 
         coin_layout = readCSVLayout(level_data[LevelType.COLLECTIBLE()])
-        self.coin_sprites = self.createTileGroup(coin_layout, LevelType.COLLECTIBLE())
+        self.coin_sprites = self.createTileGroup(coin_layout, LevelType.COLLECTIBLE())[0]
+        self.star_sprite = self.createTileGroup(coin_layout, LevelType.COLLECTIBLE())[1]
 
         enemy_layout = readCSVLayout(level_data[LevelType.ENEMY()])
-        self.enemy_sprites = self.createTileGroup(enemy_layout, LevelType.ENEMY())
+        self.enemy_sprites = self.createTileGroup(enemy_layout, LevelType.ENEMY())[0]
 
         constraints_layout = readCSVLayout(level_data[LevelType.CONSTRAINTS()])
-        self.constraints_sprites = self.createTileGroup(constraints_layout, LevelType.CONSTRAINTS())
+        self.constraints_sprites = self.createTileGroup(constraints_layout, LevelType.CONSTRAINTS())[0]
         
         if self.current_level != 2:
             self.back_sprites = self.createBackgroundImage(BACK_PATH)
@@ -132,10 +133,11 @@ class Level:
         
     def createTileGroup(self, layout, type):
         sprite_group = pg.sprite.Group()
+        star_group = pg.sprite.Group()
 
         for row_idx, row in enumerate(layout):
             for col_idx, value in enumerate(row):
-                if value != '-1':
+                if value != '-1' and value != '-2':
                     x = col_idx * tile_size
                     y = row_idx * tile_size
                     
@@ -154,8 +156,15 @@ class Level:
                         sprite = Tile(tile_size, x, y, self.current_level == 2)
                         
                     sprite_group.add(sprite)
+                elif value == '-2':
+                    if type == LevelType.COLLECTIBLE():
+                        x = col_idx * tile_size
+                        y = row_idx * tile_size
+                        sprite = DoorTile(x, y, self.current_level == 2)
+                        
+                        star_group.add(sprite)
         
-        return sprite_group
+        return (sprite_group, star_group)
     
     def collision_enemy_reverse(self):
         for enemy in self.enemy_sprites.sprites():
@@ -243,20 +252,21 @@ class Level:
             val.stop()
     
     def check_win(self):
-        if self.current_level != 2:
-            if self.current_coins == self.coins_required:
-                self.player.sprite.killallsounds()
-                self.create_overworld(self.current_level, self.new_max_level)
-        else:
+        if self.current_level == 2:
             if self.boss.sprite.is_end_death:
                 self.player.sprite.killallsounds()
                 self.create_overworld(self.current_level, self.new_max_level)
+    
+    def check_star_collision(self):
+        collided_coins = pg.sprite.spritecollide(self.player.sprite, self.star_sprite, True)
+        if collided_coins:
+            self.player.sprite.killallsounds()
+            self.create_overworld(self.current_level, self.new_max_level)
     
     def check_coin_collision(self):
         collided_coins = pg.sprite.spritecollide(self.player.sprite, self.coin_sprites, True)
         if collided_coins:
             for _ in collided_coins:
-                self.current_coins += 1
                 self.SFX[SFXType.COIN_COLLECT()].play()
                 self.update_coins(1)
     
@@ -297,6 +307,7 @@ class Level:
         self.check_win()
         self.check_coin_collision()
         self.check_enemy_collision()
+        self.check_star_collision()
         
         now = time.time()
         self.delta_time = now - self.old_time
@@ -314,6 +325,8 @@ class Level:
         
         self.coin_sprites.draw(self.display_surface)
         self.coin_sprites.update(self.world_shift, self.current_level == 2)
+        self.star_sprite.draw(self.display_surface)
+        self.star_sprite.update(self.world_shift, self.current_level == 2)
         
         self.enemy_sprites.update(self.world_shift, self.current_level == 2)
         self.constraints_sprites.update(self.world_shift, self.current_level == 2)

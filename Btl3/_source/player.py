@@ -59,16 +59,16 @@ class Player(pg.sprite.Sprite):
         self.max_energy = 100
         self.can_transform = False
         
-        self.increase_factor = 1
-        self.decrease_factor = -0.01
+        self.increase_factor = 0.15
+        self.decrease_factor = -0.1
         
         self.VFX_sprites = pg.sprite.Group()
         self.is_ultimate = False
         
         self.worldShift = world_shift
         self.ultimate_cost = {
-            PlayerType.LIGHT() : 50,
-            PlayerType.DARK() : 25,
+            PlayerType.LIGHT() : 40,
+            PlayerType.DARK() : 10,
         }
     
     def loadSound(self):
@@ -77,7 +77,9 @@ class Player(pg.sprite.Sprite):
             SFXType.JUMP() : SFX('../_audio/jump.wav', 0.6),
             SFXType.SWORD() : SFX('../_audio/sword_splash.wav', 0.75),
             SFXType.HIT() : SFX('../_audio/player_hit_by_enemy.wav', 0.75),
-            SFXType.TRANSFORMATION() : SFX('../_audio/transformation_02.wav', 0.5)
+            SFXType.TRANSFORMATION() : SFX('../_audio/transformation_02.wav', 0.5),
+            SFXType.ULTIMATE01() : SFX('../_audio/ultimate01.wav', 0.75),
+            SFXType.ULTIMATE02() : SFX('../_audio/bullet_shoot.wav', 0.5),
         }
     
     def killallsounds(self):
@@ -307,8 +309,10 @@ class Player(pg.sprite.Sprite):
         self.update_energy(-self.ultimate_cost[self.type])
         self.current_energy += -self.ultimate_cost[self.type]
         if self.type == PlayerType.LIGHT():
+            self.SFX[SFXType.ULTIMATE01()].play()
             ultimate = Ultimate(self.rect.midbottom, self.type, self, 4, 0.35, (0, 63))
         else:
+            self.SFX[SFXType.ULTIMATE02()].play()
             ultimate = Ultimate(self.rect.midbottom, self.type, self, 2, 0.5, (0, 5), 3, 15)
         self.VFX_sprites.add(ultimate)
     

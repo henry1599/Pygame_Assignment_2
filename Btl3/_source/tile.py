@@ -82,3 +82,33 @@ class Collectible(pg.sprite.Sprite):
         self.animate()
         if not is_boss:
             self.rect.x += offset
+            
+class DoorTile(pg.sprite.Sprite):
+    def __init__(self, x, y, is_boss = False):
+        super().__init__()
+        self.getAsset()
+        self.frame_idx = 0
+        self.image = self.animations[self.frame_idx]
+        self.image = pg.transform.scale(self.image, (250, 250)).convert_alpha()
+        self.rect = self.image.get_rect(topleft = (x, y))
+        self.animation_speed = 0.25
+        if is_boss:
+            self.rect.x += -40
+    
+    def getAsset(self):
+        path = '../_assets/door/'
+        self.animations = readFolder(path)
+        
+    def animate(self):
+        animation = self.animations[int(self.frame_idx)]
+        self.frame_idx += self.animation_speed
+        if self.frame_idx >= len(self.animations):
+            self.frame_idx = 0
+        
+        self.image = animation
+        self.image = pg.transform.scale(self.image, (250, 250)).convert_alpha()
+    
+    def update(self, offset, is_boss = False):
+        self.animate()
+        if not is_boss:
+            self.rect.x += offset

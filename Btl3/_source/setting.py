@@ -21,6 +21,24 @@ class SFXType:
     def RAIN() : return 'rain'
     @staticmethod
     def TRANSFORMATION() : return 'tf'
+    @staticmethod
+    def BOSS_ATTACK01() : return 'ba1'
+    @staticmethod
+    def BOSS_ATTACK02() : return 'ba2'
+    @staticmethod
+    def BOSS_ATTACK03() : return 'ba3'
+    @staticmethod
+    def BOSS_PRE_ATTACK03() : return 'bpa3'
+    @staticmethod
+    def BOSS_AWAKE() : return 'ba'
+    @staticmethod
+    def BOSS_DIE() : return 'bd'
+    @staticmethod
+    def BOSS_THEME() : return 'bt'
+    @staticmethod
+    def ULTIMATE01() : return 'ulti1'
+    @staticmethod
+    def ULTIMATE02() : return 'ulti2'
 
 class GameState:
     @staticmethod 
