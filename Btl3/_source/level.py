@@ -303,8 +303,6 @@ class Level:
         return self.world_shift
     
     def run(self):
-        for s in self.SFX.values():
-            s.update()
         self.check_death()
         self.check_win()
         self.check_coin_collision()

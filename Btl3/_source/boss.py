@@ -262,8 +262,6 @@ class Boss(pg.sprite.Sprite):
         self.getCollide()
         self.invincibility_timer()
         self.sin_value()
-        for s in self.SFX.values():
-            s.update()
         
         if not self.is_death:
             if self.is_wakeup:
@@ -289,10 +287,8 @@ class Boss(pg.sprite.Sprite):
                     
                 if self.is_attacking:
                     self.attack(self.attack_idx, self.attack_position, self.attack_facing, self.attack_perform, self.attack_time)
-            
-            
-        
-        if keys[pg.K_v] and not self.is_wakeup:
-            self.is_wakeup = True
-            self.wakeup()
-            
+            else:
+                if self.rect.colliderect(self.player.rect):
+                    self.is_wakeup = True
+                    self.wakeup()
+                    

@@ -323,8 +323,6 @@ class Player(pg.sprite.Sprite):
         self.animate()
         self.invincibility_timer()
         self.sin_value()
-        for s in self.SFX.values():
-            s.update()
         if self.type == PlayerType.LIGHT():
             self.current_energy += self.increase_factor
             if self.current_energy >= self.max_energy:

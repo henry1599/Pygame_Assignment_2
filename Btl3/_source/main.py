@@ -103,8 +103,6 @@ class Game:
             self.status = GameState.OVERWORLD()
     
     def run(self):
-        for s in self.SFX.values():
-            s.update()
         if self.status == GameState.OVERWORLD():
             self.overworld.run()
         else:

@@ -35,7 +35,3 @@ class SFX:
     
     def stop(self):
         self.sound.stop()
-    
-    def update(self):
-        print(global_volume)
-        self.sound.set_volume(self.volume * global_volume)
